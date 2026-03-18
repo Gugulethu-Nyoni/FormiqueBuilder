@@ -1308,14 +1308,640 @@ class FormiqueBuilder {
   }
 
   generateOptionsContent(field) {
-    // Keep your existing generateOptionsContent implementation here
-    // (copy from your original file - too long to include)
+  const fieldConfig = this.formConfig.form_input_types[field.type];
+  this.elements.optionsModalContent.innerHTML = '';
+  
+  // 1. ADD FIELD-SPECIFIC VALIDATIONS FIRST (AT THE TOP)
+  const specificAccordion = document.createElement('div');
+  specificAccordion.className = 'option-group';
+  
+  let specificContent = '';
+  
+  if (fieldConfig.validation) {
+    Object.keys(fieldConfig.validation).forEach(validationRule => {
+      if (validationRule === 'required') return;
+      
+      const validationConfig = fieldConfig.validation[validationRule];
+      const currentValue = field.attributes.validation && field.attributes.validation[validationRule] !== undefined 
+        ? field.attributes.validation[validationRule] 
+        : validationConfig;
+      
+      // Handle different input types based on validation rule type
+      if (typeof validationConfig === 'boolean') {
+        // Boolean checkbox
+        specificContent += `
+          <div class="checkbox-label">
+            <input type="checkbox" class="option-checkbox" id="option_${validationRule}" 
+                   ${currentValue ? 'checked' : ''}>
+            <label for="option_${validationRule}">${validationRule.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+          </div>
+        `;
+      } else if (Array.isArray(validationConfig)) {
+        // Array input (comma separated)
+        const arrayValue = Array.isArray(currentValue) ? currentValue.join(', ') : currentValue;
+        
+        // SPECIAL HANDLING FOR DYNAMIC SELECT "OPTIONS"
+        if (validationRule === 'options' && field.type === 'dynamicSingleSelect') {
+          specificContent += `
+            <div class="option-group">
+              <label class="option-label" for="option_${validationRule}">Parent Options</label>
+              <input type="text" class="option-input" id="option_${validationRule}" 
+                     value="${arrayValue}" placeholder="South Africa, Zimbabwe, Canada">
+              <small>Comma-separated parent values</small>
+            </div>
+            <div class="option-group">
+              <button type="button" class="control-btn" id="buildChildOptions" 
+                      style="padding: 6px 12px; font-size: 12px;">
+                <i class="fas fa-plus"></i> Configure Child Options
+              </button>
+            </div>
+          `;
+        } else {
+          // Regular field options
+          specificContent += `
+            <div class="option-group">
+              <label class="option-label" for="option_${validationRule}">${validationRule.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+              <input type="text" class="option-input" id="option_${validationRule}" 
+                     value="${arrayValue}" placeholder="Comma separated values">
+            </div>
+          `;
+        }
+      } else if (typeof validationConfig === 'object' && validationConfig !== null) {
+        // Nested object - handle custom_patterns, strength_requirements, etc.
+        Object.keys(validationConfig).forEach(subRule => {
+          const subInputId = `option_${validationRule}_${subRule}`;
+          const subCurrentValue = field.attributes.validation && 
+                                 field.attributes.validation[validationRule] && 
+                                 field.attributes.validation[validationRule][subRule] !== undefined 
+            ? field.attributes.validation[validationRule][subRule] 
+            : validationConfig[subRule];
+          
+          if (typeof validationConfig[subRule] === 'boolean') {
+            specificContent += `
+              <div class="checkbox-label">
+                <input type="checkbox" class="option-checkbox" id="${subInputId}" 
+                       ${subCurrentValue ? 'checked' : ''}>
+                <label for="${subInputId}">${subRule.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+              </div>
+            `;
+          } else {
+            specificContent += `
+              <div class="option-group">
+                <label class="option-label" for="${subInputId}">${subRule.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+                <input type="text" class="option-input" id="${subInputId}" 
+                       value="${subCurrentValue || ''}">
+              </div>
+            `;
+          }
+        });
+      } else {
+        // Regular text/number input
+        const inputType = typeof validationConfig === 'number' ? 'number' : 'text';
+        specificContent += `
+          <div class="option-group">
+            <label class="option-label" for="option_${validationRule}">${validationRule.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+            <input type="${inputType}" class="option-input" id="option_${validationRule}" 
+                   value="${currentValue !== null ? currentValue : ''}">
+          </div>
+        `;
+      }
+    });
   }
+  
+  if (!specificContent) {
+    specificContent = '<div class="option-group"><em>No specific validations for this field type</em></div>';
+  }
+  
+  specificAccordion.innerHTML = `
+    <div class="accordion-header" id="specificHeader">
+      <div class="accordion-title">Field Specific Validations</div>
+      <div class="accordion-icon"><i class="fas fa-chevron-down"></i></div>
+    </div>
+    <div class="accordion-content" id="specificContent">
+      ${specificContent}
+    </div>
+  `;
+  
+  this.elements.optionsModalContent.appendChild(specificAccordion);
+  
+  // 2. ADD CONDITIONAL LOGIC SECTION
+  const conditionalAccordion = document.createElement('div');
+  conditionalAccordion.className = 'option-group';
+  
+  // Get current conditional logic values
+  const conditionalLogic = this.getNestedValue(field.attributes, 'behavior_conditional_logic') || {
+    enabled: false,
+    dependsOn: '',
+    dependents: '',
+    condition_value: ''
+  };
+  
+  conditionalAccordion.innerHTML = `
+    <div class="accordion-header" id="conditionalHeader">
+      <div class="accordion-title">Conditional Logic</div>
+      <div class="accordion-icon"><i class="fas fa-code-branch"></i></div>
+    </div>
+    <div class="accordion-content" id="conditionalContent">
+      <div class="checkbox-label">
+        <input type="checkbox" class="option-checkbox" id="option_behavior_conditional_logic_enabled" 
+               ${conditionalLogic.enabled ? 'checked' : ''}>
+        <label for="option_behavior_conditional_logic_enabled">Enable Conditional Display</label>
+      </div>
+      
+      <div class="option-group">
+        <label class="option-label">Depends On (This field shows when...)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" class="option-input" id="option_behavior_conditional_logic_dependsOn" 
+                 value="${conditionalLogic.dependsOn || ''}" 
+                 placeholder="parent_field,value" style="flex: 1;">
+          <button type="button" class="control-btn" id="pickFieldBtn" 
+                  style="padding: 6px 10px; font-size: 12px;">
+            <i class="fas fa-list"></i> Pick Field
+          </button>
+        </div>
+        <small>Format: field_name,value (e.g., gender,Female)</small>
+      </div>
+      
+      <div class="option-group">
+        <label class="option-label">Dependent Fields (Fields that show when this field equals...)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" class="option-input" id="option_behavior_conditional_logic_dependents" 
+                 value="${conditionalLogic.dependents || ''}" 
+                 placeholder="field1,field2" style="flex: 1;">
+          <button type="button" class="control-btn" id="pickDependentsBtn"
+                  style="padding: 6px 10px; font-size: 12px;">
+            <i class="fas fa-list"></i> Pick Fields
+          </button>
+        </div>
+        <small>Comma-separated field names</small>
+      </div>
+      
+      <div class="option-group">
+        <label class="option-label">Condition Value</label>
+        <input type="text" class="option-input" id="option_behavior_conditional_logic_condition_value" 
+               value="${conditionalLogic.condition_value || ''}" 
+               placeholder="Value that triggers dependent fields">
+        <small>When this field equals this value, show dependent fields</small>
+      </div>
+    </div>
+  `;
+  
+  this.elements.optionsModalContent.appendChild(conditionalAccordion);
+  
+  // 3. THEN ADD UNIVERSAL ATTRIBUTES CATEGORIES
+  Object.keys(this.formConfig.universal_attributes).forEach(category => {
+    const categoryAccordion = document.createElement('div');
+    categoryAccordion.className = 'option-group';
+    
+    let categoryContentHTML = '';
+    const categoryAttrs = this.formConfig.universal_attributes[category];
+    
+    // Handle nested objects recursively
+    const generateAttributeInputs = (obj, prefix = '') => {
+      let html = '';
+      Object.keys(obj).forEach(attr => {
+        if (attr === 'required') return; // Skip required as it's handled in main UI
+        
+        const fullAttrName = prefix ? `${prefix}_${attr}` : attr;
+        const currentValue = this.getNestedValue(field.attributes, fullAttrName) !== undefined 
+          ? this.getNestedValue(field.attributes, fullAttrName) 
+          : obj[attr];
+        
+        let inputElement = '';
+        const defaultValue = obj[attr];
+        
+        if (typeof defaultValue === 'boolean') {
+          // Boolean attributes use checkboxes
+          inputElement = `
+            <div class="checkbox-label">
+              <input type="checkbox" class="option-checkbox" id="option_${fullAttrName}" 
+                     ${currentValue ? 'checked' : ''}>
+              <label for="option_${fullAttrName}">${attr.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+            </div>
+          `;
+        } else if (typeof defaultValue === 'object' && defaultValue !== null && !Array.isArray(defaultValue)) {
+          // Nested object - recurse
+          html += `<div style="margin-left: 15px; border-left: 2px solid #e5e7eb; padding-left: 10px;">`;
+          html += `<div class="option-label" style="margin-top: 10px;">${attr.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>`;
+          html += generateAttributeInputs(defaultValue, fullAttrName);
+          html += `</div>`;
+          return html;
+        } else {
+          // Regular text inputs
+          inputElement = `
+            <input type="text" class="option-input" id="option_${fullAttrName}" 
+                   value="${currentValue}" placeholder="${defaultValue}">
+          `;
+        }
+        
+        html += `
+          <div class="option-group">
+            <label class="option-label" for="option_${fullAttrName}">${attr.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+            ${inputElement}
+          </div>
+        `;
+      });
+      return html;
+    };
+    
+    categoryContentHTML = generateAttributeInputs(categoryAttrs);
+    
+    categoryAccordion.innerHTML = `
+      <div class="accordion-header" id="universal_${category}Header">
+        <div class="accordion-title">${category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+        <div class="accordion-icon"><i class="fas fa-chevron-down"></i></div>
+      </div>
+      <div class="accordion-content" id="universal_${category}Content">
+        ${categoryContentHTML}
+      </div>
+    `;
+    
+    this.elements.optionsModalContent.appendChild(categoryAccordion);
+  });
+  
+  // 4. SET UP ACCORDION BEHAVIOR AND FIELD PICKERS
+  setTimeout(() => {
+    // Conditional Logic accordion starts collapsed
+    const conditionalHeader = this.container.querySelector('#conditionalHeader');
+    const conditionalContent = this.container.querySelector('#conditionalContent');
+    if (conditionalHeader && conditionalContent) {
+      conditionalHeader.addEventListener('click', () => {
+        const isActive = conditionalHeader.classList.toggle('active');
+        conditionalContent.classList.toggle('active', isActive);
+      });
+    }
+    
+    // ALL OTHER CATEGORIES START COLLAPSED
+    Object.keys(this.formConfig.universal_attributes).forEach(category => {
+      const header = this.container.querySelector(`#universal_${category}Header`);
+      const content = this.container.querySelector(`#universal_${category}Content`);
+      
+      if (header && content) {
+        header.addEventListener('click', () => {
+          const isActive = header.classList.toggle('active');
+          content.classList.toggle('active', isActive);
+        });
+      }
+    });
 
-  saveOptions() {
-    // Keep your existing saveOptions implementation here
-    // (copy from your original file - too long to include)
+    const specificHeader = this.container.querySelector('#specificHeader');
+    const specificContent = this.container.querySelector('#specificContent');
+    
+    // Specific validations accordion
+    if (specificHeader && specificContent) {
+      specificHeader.addEventListener('click', () => {
+        const isActive = specificHeader.classList.toggle('active');
+        specificContent.classList.toggle('active', isActive);
+      });
+    }
+    
+    // SIMPLE FIELD PICKER BUTTONS FOR CONDITIONAL LOGIC
+    const pickFieldBtn = this.container.querySelector('#pickFieldBtn');
+    const dependsOnInput = this.container.querySelector('#option_behavior_conditional_logic_dependsOn');
+    const pickDependentsBtn = this.container.querySelector('#pickDependentsBtn');
+    const dependentsInput = this.container.querySelector('#option_behavior_conditional_logic_dependents');
+    
+    if (pickFieldBtn && dependsOnInput) {
+      pickFieldBtn.addEventListener('click', () => {
+        const otherFields = this.formData.fields.filter(f => f.id !== this.currentOptionsField);
+        if (otherFields.length === 0) {
+          alert('No other fields available');
+          return;
+        }
+        
+        let fieldList = 'Available fields:\n';
+        otherFields.forEach(f => {
+          fieldList += `• ${f.name}\n`;
+        });
+        
+        const fieldName = prompt(`${fieldList}\nEnter field name:`);
+        if (fieldName) {
+          const value = prompt(`Enter value for field "${fieldName}":`);
+          if (value !== null) {
+            dependsOnInput.value = `${fieldName},${value}`;
+          }
+        }
+      });
+    }
+    
+    if (pickDependentsBtn && dependentsInput) {
+      pickDependentsBtn.addEventListener('click', () => {
+        const otherFields = this.formData.fields.filter(f => f.id !== this.currentOptionsField);
+        if (otherFields.length === 0) {
+          alert('No other fields available');
+          return;
+        }
+        
+        let fieldList = 'Available fields (Ctrl/Cmd+click to select multiple):\n';
+        otherFields.forEach(f => {
+          fieldList += `• ${f.name}\n`;
+        });
+        
+        const selected = prompt(`${fieldList}\nEnter field names (comma-separated):`);
+        if (selected) {
+          dependentsInput.value = selected;
+        }
+      });
+    }
+    
+    // ENHANCED DYNAMIC SELECT BUILDER
+    const buildBtn = this.container.querySelector('#buildChildOptions');
+    if (buildBtn) {
+      buildBtn.addEventListener('click', () => {
+        const parentInput = this.container.querySelector('#option_options');
+        if (parentInput && parentInput.value.trim()) {
+          const parents = parentInput.value.split(',').map(p => p.trim()).filter(p => p);
+          
+          if (parents.length === 0) {
+            alert('Please enter at least one parent option');
+            return;
+          }
+          
+          // Create a step-by-step input for each parent
+          let currentIndex = 0;
+          
+          const promptForChildOptions = (index) => {
+            if (index >= parents.length) {
+              // All parents done, create the input fields
+              createChildInputFields();
+              return;
+            }
+            
+            const parent = parents[index];
+            const childOptions = prompt(
+              `Enter child options for: ${parent}\n\n` +
+              `Format: "Child1, Child2, Child3"\n\n` +
+              `Example: "Gauteng, Limpopo, Mpumalanga"`,
+              field.attributes.validation?.dynamic_options?.[parent]?.join(', ') || ''
+            );
+            
+            if (childOptions !== null) { // User didn't cancel
+              // Save the child options temporarily
+              if (!field.attributes.validation) field.attributes.validation = {};
+              if (!field.attributes.validation.dynamic_options) field.attributes.validation.dynamic_options = {};
+              field.attributes.validation.dynamic_options[parent] = childOptions.split(',').map(c => c.trim()).filter(c => c);
+              
+              // Move to next parent
+              promptForChildOptions(index + 1);
+            }
+          };
+          
+          const createChildInputFields = () => {
+            // Remove any existing child inputs
+            const existingContainer = this.container.querySelector('#childOptionsContainer');
+            if (existingContainer) {
+              existingContainer.remove();
+            }
+            
+            // Create new container
+            const container = document.createElement('div');
+            container.id = 'childOptionsContainer';
+            container.style.marginTop = '10px';
+            
+            parents.forEach(parent => {
+              const safeId = parent.replace(/\s+/g, '_');
+              const childOptions = field.attributes.validation?.dynamic_options?.[parent] || [];
+              
+              container.innerHTML += `
+                <div class="option-group" style="margin-left: 10px; border-left: 2px solid #e5e7eb; padding-left: 10px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <label class="option-label" style="font-size: 12px; min-width: 100px;">${parent}:</label>
+                    <input type="text" class="option-input" 
+                           id="option_dynamic_${safeId}" 
+                           value="${childOptions.join(', ')}"
+                           placeholder="Child1, Child2" 
+                           style="font-size: 12px; flex: 1;">
+                  </div>
+                </div>
+              `;
+            });
+            
+            // Insert after the build button
+            buildBtn.parentNode.insertBefore(container, buildBtn.nextSibling);
+          };
+          
+          // Start the step-by-step process
+          promptForChildOptions(0);
+        } else {
+          alert('Please enter parent options first (comma separated)');
+        }
+      });
+    }
+  }, 20);
+}
+
+saveOptions() {
+  if (!this.currentOptionsField) return;
+
+  const field = this.formData.fields.find(f => f.id === this.currentOptionsField);
+  if (!field) return;
+  
+  const fieldConfig = this.formConfig.form_input_types[field.type];
+  
+  // DON'T reset attributes completely - just update what we need
+  if (!field.attributes) {
+    field.attributes = {
+      required: field.required,
+      name: field.name,
+      label: field.label || '',
+      validation: {}
+    };
   }
+  
+  // *** SAVE CONDITIONAL LOGIC SEPARATELY ***
+  const enabledInput = this.container.querySelector('#option_behavior_conditional_logic_enabled');
+  const dependsOnInput = this.container.querySelector('#option_behavior_conditional_logic_dependsOn');
+  const dependentsInput = this.container.querySelector('#option_behavior_conditional_logic_dependents');
+  const conditionValueInput = this.container.querySelector('#option_behavior_conditional_logic_condition_value');
+  
+  if (enabledInput && dependsOnInput && dependentsInput && conditionValueInput) {
+    const enabled = enabledInput.checked;
+    const dependsOn = dependsOnInput.value.trim();
+    const dependents = dependentsInput.value.trim();
+    const conditionValue = conditionValueInput.value.trim();
+    
+    if (enabled || dependsOn || dependents || conditionValue) {
+      // Save to field.attributes.behavior_conditional_logic
+      if (!field.attributes.behavior_conditional_logic) {
+        field.attributes.behavior_conditional_logic = {};
+      }
+      
+      field.attributes.behavior_conditional_logic = {
+        enabled: enabled,
+        dependsOn: dependsOn,
+        dependents: dependents,
+        condition_value: conditionValue
+      };
+    } else {
+      // Remove if empty
+      delete field.attributes.behavior_conditional_logic;
+    }
+  }
+  
+  // *** SAVE DYNAMIC SELECT OPTIONS ***
+  if (field.type === 'dynamicSingleSelect') {
+    if (!field.attributes.validation) {
+      field.attributes.validation = {};
+    }
+    
+    // Get parent options
+    const parentInput = this.container.querySelector('#option_options');
+    if (parentInput && parentInput.value.trim()) {
+      const parents = parentInput.value.split(',').map(p => p.trim()).filter(p => p);
+      field.attributes.validation.options = parents;
+      
+      // Get child options for each parent
+      const dynamicOptions = {};
+      parents.forEach(parent => {
+        const safeId = parent.replace(/\s+/g, '_');
+        const childInput = this.container.querySelector(`#option_dynamic_${safeId}`);
+        if (childInput && childInput.value.trim()) {
+          dynamicOptions[parent] = childInput.value.split(',').map(c => c.trim()).filter(c => c);
+        }
+      });
+      
+      field.attributes.validation.dynamic_options = dynamicOptions;
+    }
+  }
+  
+  // THEN save universal attributes from all categories
+  Object.keys(this.formConfig.universal_attributes).forEach(category => {
+    this.saveCategoryAttributes(this.formConfig.universal_attributes[category], field.attributes, '');
+  });
+  
+  // Save field-specific validations (except for dynamic selects which are already handled)
+  if (fieldConfig.validation && field.type !== 'dynamicSingleSelect') { // Skip for dynamic selects
+    if (!field.attributes.validation) {
+      field.attributes.validation = {};
+    }
+    
+    Object.keys(fieldConfig.validation).forEach(validationRule => {
+      if (validationRule === 'required') return;
+      
+      const input = this.container.querySelector(`#option_${validationRule}`);
+      
+      if (input && this.hasValue(input)) {
+        const validationConfig = fieldConfig.validation[validationRule];
+        
+        if (typeof validationConfig === 'boolean') {
+          field.attributes.validation[validationRule] = input.checked;
+        } else if (Array.isArray(validationConfig)) {
+          field.attributes.validation[validationRule] = input.value.split(',').map(item => item.trim()).filter(item => item);
+        } else if (typeof validationConfig === 'object' && validationConfig !== null) {
+          if (!field.attributes.validation[validationRule]) {
+            field.attributes.validation[validationRule] = {};
+          }
+          
+          Object.keys(validationConfig).forEach(subRule => {
+            const subInput = this.container.querySelector(`#option_${validationRule}_${subRule}`);
+            if (subInput && this.hasValue(subInput)) {
+              if (typeof validationConfig[subRule] === 'boolean') {
+                field.attributes.validation[validationRule][subRule] = subInput.checked;
+              } else {
+                field.attributes.validation[validationRule][subRule] = subInput.value;
+              }
+            }
+          });
+        } else {
+          if (typeof validationConfig === 'number') {
+            field.attributes.validation[validationRule] = input.value ? Number(input.value) : null;
+          } else {
+            field.attributes.validation[validationRule] = input.value || null;
+          }
+        }
+      }
+    });
+  }
+  
+  // Clean up empty objects and arrays
+  this.cleanupEmptyValues(field.attributes);
+  
+  // Force update
+  this.updateFormiqueOutput();
+  this.renderFormPreview();
+  
+  this.hideOptionsModal();
+}
+
+saveCategoryAttributes(categoryAttrs, targetObj, prefix) {
+  Object.keys(categoryAttrs).forEach(attr => {
+    if (attr === 'required') return;
+    
+    const fullAttrName = prefix ? `${prefix}_${attr}` : attr;
+    
+    // Skip conditional logic as it's handled separately
+    if (fullAttrName === 'behavior_conditional_logic') {
+      return;
+    }
+    
+    const input = this.container.querySelector(`#option_${fullAttrName}`);
+    
+    if (input && this.hasValue(input)) {
+      const defaultValue = categoryAttrs[attr];
+      
+      if (typeof defaultValue === 'boolean') {
+        if (input.checked !== defaultValue) {
+          this.setNestedValue(targetObj, fullAttrName, input.checked);
+        }
+      } else if (typeof defaultValue === 'object' && defaultValue !== null && !Array.isArray(defaultValue)) {
+        const nestedObj = {};
+        this.saveCategoryAttributes(defaultValue, nestedObj, fullAttrName);
+        if (Object.keys(nestedObj).length > 0) {
+          this.setNestedValue(targetObj, fullAttrName, nestedObj);
+        }
+      } else {
+        const value = input.value.trim();
+        if (value && value !== String(defaultValue)) {
+          this.setNestedValue(targetObj, fullAttrName, value);
+        }
+      }
+    }
+  });
+}
+
+hasValue(input) {
+  if (input.type === 'checkbox') {
+    return input.checked !== input.defaultChecked;
+  }
+  if (input.type === 'number') {
+    return input.value !== '' && input.value !== input.defaultValue;
+  }
+  return input.value.trim() !== '' && input.value !== input.defaultValue;
+}
+
+cleanupEmptyValues(obj) {
+  Object.keys(obj).forEach(key => {
+    if (obj[key] && typeof obj[key] === 'object') {
+      this.cleanupEmptyValues(obj[key]);
+      if (Object.keys(obj[key]).length === 0) {
+        delete obj[key];
+      }
+    } else if (obj[key] === '' || obj[key] === null || obj[key] === undefined) {
+      delete obj[key];
+    }
+  });
+}
+
+getNestedValue(obj, path) {
+  return path.split('_').reduce((current, key) => {
+    return current && current[key] !== undefined ? current[key] : undefined;
+  }, obj);
+}
+
+setNestedValue(obj, path, value) {
+  const keys = path.split('_');
+  const lastKey = keys.pop();
+  const target = keys.reduce((current, key) => {
+    if (!current[key] || typeof current[key] !== 'object') {
+      current[key] = {};
+    }
+    return current[key];
+  }, obj);
+  target[lastKey] = value;
+}
+
+
+  
 
   updateFormiqueOutput() {
     let output = `@form: ${this.formData.form.id}\n`;
