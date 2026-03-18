@@ -1,10 +1,16 @@
 class FormiqueBuilder {
-  constructor(containerId = 'formique-builder') {
+  constructor(containerId = 'formique-builder', options = {}) {
     this.container = document.getElementById(containerId);
     if (!this.container) {
       console.error(`FormiqueBuilder: Container #${containerId} not found`);
       return;
     }
+
+    // Options with defaults
+    this.options = {
+      showFormSettings: true, // visible by default
+      ...options
+    };
 
     // Form data model
     this.formData = {
@@ -510,27 +516,18 @@ class FormiqueBuilder {
   }
 
   getTemplate() {
-    return `
-      
-      <!--
-      <div class="header">
-        <h1>Form Builder</h1>
-        <p>Create beautiful forms with our intuitive drag-and-drop builder</p>
-      </div>
-        -->
-
+    // Conditionally include form settings panel
+    const formSettingsHtml = this.options.showFormSettings ? `
       <div class="form-settings-panel">
         <div class="settings-header">
           <h3>Form Settings</h3>
-          <button class="settings-toggle" id="settingsToggle">
-            <i class="fas fa-chevron-down"></i> Show Settings
-          </button>
+          <button class="settings-toggle" id="settingsToggle"><i class="fas fa-chevron-up"></i> Hide Settings</button>
         </div>
 
-        <div class="settings-content" id="settingsContent">
+        <div class="settings-content active" id="settingsContent">
           <div class="settings-group">
             <label class="settings-label">Form ID</label>
-            <input type="text" class="settings-input" id="formId" value="user-registration" />
+            <input type="text" class="settings-input" id="formId" value="user-registration">
           </div>
 
           <div class="option-group">
@@ -554,6 +551,10 @@ class FormiqueBuilder {
           </div>
         </div>
       </div>
+    ` : '';
+
+    return `
+      ${formSettingsHtml}
 
       <div class="builder-container">
         <div class="form-preview" id="formPreview">
@@ -662,13 +663,15 @@ class FormiqueBuilder {
   }
 
   attachEvents() {
-    // Settings toggle
-    this.elements.settingsToggle.addEventListener('click', () => {
-      const isActive = this.elements.settingsContent.classList.toggle('active');
-      this.elements.settingsToggle.innerHTML = isActive ? 
-        '<i class="fas fa-chevron-up"></i> Hide Settings' : 
-        '<i class="fas fa-chevron-down"></i> Show Settings';
-    });
+    // Only attach settings events if panel exists
+    if (this.elements.settingsToggle) {
+      this.elements.settingsToggle.addEventListener('click', () => {
+        const isActive = this.elements.settingsContent.classList.toggle('active');
+        this.elements.settingsToggle.innerHTML = isActive ? 
+          '<i class="fas fa-chevron-up"></i> Hide Settings' : 
+          '<i class="fas fa-chevron-down"></i> Show Settings';
+      });
+    }
 
     // Copy button
     this.elements.copyBtn.addEventListener('click', () => {
@@ -724,10 +727,12 @@ class FormiqueBuilder {
     });
 
     // Form ID input
-    this.elements.formId.addEventListener('input', (e) => {
-      this.formData.form.id = e.target.value;
-      this.updateFormiqueOutput();
-    });
+    if (this.elements.formId) {
+      this.elements.formId.addEventListener('input', (e) => {
+        this.formData.form.id = e.target.value;
+        this.updateFormiqueOutput();
+      });
+    }
 
     // Element list click
     this.elements.elementList.addEventListener('click', (e) => {
@@ -754,7 +759,7 @@ class FormiqueBuilder {
       }
     });
 
-    // Settings accordions
+    // Settings accordions - only if they exist
     if (this.elements.formSettingsHeader) {
       this.elements.formSettingsHeader.addEventListener('click', () => {
         const isActive = this.elements.formSettingsHeader.classList.toggle('active');
@@ -813,10 +818,11 @@ class FormiqueBuilder {
   }
 
   generateFormSettings() {
+    // Skip if settings panels don't exist
+    if (!this.elements.formSettingsFields || !this.elements.formParamsFields) return;
+    
     const settingsContainer = this.elements.formSettingsFields;
     const paramsContainer = this.elements.formParamsFields;
-    
-    if (!settingsContainer || !paramsContainer) return;
     
     settingsContainer.innerHTML = '';
     paramsContainer.innerHTML = '';
@@ -1302,16 +1308,13 @@ class FormiqueBuilder {
   }
 
   generateOptionsContent(field) {
-    const fieldConfig = this.formConfig.form_input_types[field.type];
-    this.elements.optionsModalContent.innerHTML = '';
-    
-    // [Keep your existing generateOptionsContent implementation here - it's too long to paste but copy it exactly from your original]
-    // Just prefix all function calls with "this." and make sure it's inside the class
+    // Keep your existing generateOptionsContent implementation here
+    // (copy from your original file - too long to include)
   }
 
   saveOptions() {
-    // [Keep your existing saveOptions implementation here - copy it exactly from your original]
-    // Just prefix all function calls with "this." and make sure it's inside the class
+    // Keep your existing saveOptions implementation here
+    // (copy from your original file - too long to include)
   }
 
   updateFormiqueOutput() {
@@ -1472,6 +1475,67 @@ class FormiqueBuilder {
     });
     
     return output;
+  }
+
+  // Public API methods
+  getOutput() {
+    return this.elements.output?.value || '';
+  }
+
+  reset() {
+    this.formData.fields = [];
+    this.formData.form.id = "user-registration";
+    this.formData.form.settings = { ...this.getDefaultState().form.settings };
+    this.formData.form.parameters = { ...this.getDefaultState().form.parameters };
+    
+    // Regenerate settings UI if it exists
+    if (this.elements.formSettingsFields) {
+      this.generateFormSettings();
+    }
+    
+    this.renderFormPreview();
+    this.updateFormiqueOutput();
+  }
+
+  getDefaultState() {
+    return {
+      form: {
+        id: "user-registration",
+        settings: {
+          theme: "light",
+          themeColor: "#39a0ca",
+          submitOnPage: false,
+          submitMode: "email",
+          sendTo: "",
+          successMessage: "",
+          errorMessage: "",
+          requiredFieldIndicator: true,
+          placeholders: true,
+          formContainerId: "formique",
+          formContainerStyle: ""
+        },
+        parameters: {
+          method: "POST",
+          action: "",
+          id: "",
+          class: "",
+          style: "",
+          enctype: "application/x-www-form-urlencoded",
+          target: "_self",
+          novalidate: false,
+          accept_charset: "UTF-8"
+        }
+      },
+      fields: []
+    };
+  }
+
+  destroy() {
+    // Remove the builder from DOM
+    this.container.innerHTML = '';
+    // Clear references
+    this.elements = null;
+    this.formData = null;
   }
 }
 

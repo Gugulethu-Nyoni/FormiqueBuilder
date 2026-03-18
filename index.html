@@ -837,7 +837,10 @@
     <script src="formique-builder.js"></script>
     <script>
         // Initialize the builder
-        const builder = new FormiqueBuilder();
+        //const builder = new FormiqueBuilder();
+
+        const builder = new FormiqueBuilder('formique-builder', { showFormSettings: false });
+
         
         // Optional: Log output to console when it changes
         setInterval(() => {
