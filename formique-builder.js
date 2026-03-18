@@ -1442,11 +1442,13 @@ class FormiqueBuilder {
       <div class="accordion-icon"><i class="fas fa-code-branch"></i></div>
     </div>
     <div class="accordion-content" id="conditionalContent">
+      
       <div class="checkbox-label">
         <input type="checkbox" class="option-checkbox" id="option_behavior_conditional_logic_enabled" 
                ${conditionalLogic.enabled ? 'checked' : ''}>
         <label for="option_behavior_conditional_logic_enabled">Enable Conditional Display</label>
       </div>
+      
       
       <div class="option-group">
         <label class="option-label">Depends On (This field shows when...)</label>
@@ -1749,35 +1751,37 @@ saveOptions() {
   }
   
   // *** SAVE CONDITIONAL LOGIC SEPARATELY ***
-  const enabledInput = this.container.querySelector('#option_behavior_conditional_logic_enabled');
-  const dependsOnInput = this.container.querySelector('#option_behavior_conditional_logic_dependsOn');
-  const dependentsInput = this.container.querySelector('#option_behavior_conditional_logic_dependents');
-  const conditionValueInput = this.container.querySelector('#option_behavior_conditional_logic_condition_value');
-  
-  if (enabledInput && dependsOnInput && dependentsInput && conditionValueInput) {
-    const enabled = enabledInput.checked;
-    const dependsOn = dependsOnInput.value.trim();
-    const dependents = dependentsInput.value.trim();
-    const conditionValue = conditionValueInput.value.trim();
+  // *** SAVE CONDITIONAL LOGIC SEPARATELY ***
+const dependsOnInput = this.container.querySelector('#option_behavior_conditional_logic_dependsOn');
+const dependentsInput = this.container.querySelector('#option_behavior_conditional_logic_dependents');
+const conditionValueInput = this.container.querySelector('#option_behavior_conditional_logic_condition_value');
+const enabledInput = this.container.querySelector('#option_behavior_conditional_logic_enabled');
+
+// Only check for the inputs that actually contain data
+if (dependsOnInput || dependentsInput || conditionValueInput) {
+    const dependsOn = dependsOnInput ? dependsOnInput.value.trim() : '';
+    const dependents = dependentsInput ? dependentsInput.value.trim() : '';
+    const conditionValue = conditionValueInput ? conditionValueInput.value.trim() : '';
+    const enabled = enabledInput ? enabledInput.checked : false;
     
+    // Only save if there's actual data
     if (enabled || dependsOn || dependents || conditionValue) {
-      // Save to field.attributes.behavior_conditional_logic
-      if (!field.attributes.behavior_conditional_logic) {
-        field.attributes.behavior_conditional_logic = {};
-      }
-      
-      field.attributes.behavior_conditional_logic = {
-        enabled: enabled,
-        dependsOn: dependsOn,
-        dependents: dependents,
-        condition_value: conditionValue
-      };
+        if (!field.attributes.behavior_conditional_logic) {
+            field.attributes.behavior_conditional_logic = {};
+        }
+        
+        field.attributes.behavior_conditional_logic = {
+            enabled: enabled,
+            dependsOn: dependsOn,
+            dependents: dependents,
+            condition_value: conditionValue
+        };
     } else {
-      // Remove if empty
-      delete field.attributes.behavior_conditional_logic;
+        delete field.attributes.behavior_conditional_logic;
     }
-  }
-  
+}
+
+
   // *** SAVE DYNAMIC SELECT OPTIONS ***
   if (field.type === 'dynamicSingleSelect') {
     if (!field.attributes.validation) {
@@ -1941,7 +1945,7 @@ setNestedValue(obj, path, value) {
 }
 
 
-  
+
 
   updateFormiqueOutput() {
     let output = `@form: ${this.formData.form.id}\n`;
