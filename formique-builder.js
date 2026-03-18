@@ -1,10 +1,766 @@
+const css = `
+    .formique-builder {
+      --uf-color-primary: #39a0ca;
+      --uf-color-accent: #ff6b8b;
+      --uf-color-secondary: #9c6bff;
+      --uf-color-bg-canvas: #ffffff;
+      --uf-color-text-dark: #313d4b;
+      --uf-color-text-secondary: #6b7280;
+      --uf-color-border-subtle: #e5e7eb;
+      --uf-radius-md: 6px;
+      --uf-radius-lg: 8px;
+      --uf-shadow-md: 0 2px 8px rgba(0,0,0,0.1);
+      --uf-shadow-lg: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .formique-builder * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .formique-builder {
+      background: #f8fafc;
+      color: var(--uf-color-text-dark);
+      line-height: 1.5;
+      max-width: 1000px;
+      margin: 0 auto;
+      font-size: 14px;
+    }
+
+    .formique-builder .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .formique-builder .header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--uf-color-primary) 0%, var(--uf-color-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .formique-builder .header p {
+      color: var(--uf-color-text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .formique-builder .builder-container {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .formique-builder .builder-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .formique-builder .form-preview {
+      background: white;
+      border-radius: var(--uf-radius-lg);
+      padding: 20px;
+      box-shadow: var(--uf-shadow-md);
+      min-height: 300px;
+    }
+
+    .formique-builder .add-block-center {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .formique-builder .add-block-btn {
+      background: var(--uf-color-primary);
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .formique-builder .add-block-btn:hover {
+      background: #2d8db8;
+      transform: scale(1.1);
+    }
+
+    .formique-builder .output-panel {
+      background: white;
+      border-radius: var(--uf-radius-lg);
+      padding: 20px;
+      box-shadow: var(--uf-shadow-md);
+    }
+
+    .formique-builder .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .formique-builder .output-header h3 {
+      color: var(--uf-color-text-dark);
+      font-size: 1rem;
+    }
+
+    .formique-builder .output-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .formique-builder .copy-btn,
+    .formique-builder .submit-btn {
+      background: var(--uf-color-primary);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: var(--uf-radius-md);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .formique-builder .submit-btn {
+      background: var(--uf-color-secondary);
+    }
+
+    .formique-builder .copy-btn:hover {
+      background: #2d8db8;
+    }
+
+    .formique-builder .submit-btn:hover {
+      background: #8a5bff;
+    }
+
+    .formique-builder #formiqueOutput {
+      width: 100%;
+      height: 200px;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical;
+      background: #f9fafb;
+      margin-bottom: 15px;
+    }
+
+    .formique-builder .form-block {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px dashed var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      margin-bottom: 10px;
+      background: white;
+      transition: all 0.2s ease;
+      position: relative;
+      font-size: 13px;
+    }
+
+    .formique-builder .form-block:hover {
+      border-color: var(--uf-color-primary);
+    }
+
+    .formique-builder .form-block.selected {
+      border-color: var(--uf-color-primary);
+      background: #f0f9ff;
+    }
+
+    .formique-builder .drag-handle {
+      cursor: grab;
+      color: var(--uf-color-text-secondary);
+      padding: 4px;
+      font-size: 12px;
+    }
+
+    .formique-builder .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .formique-builder .add-element-btn {
+      background: var(--uf-color-primary);
+      color: white;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .formique-builder .input-area {
+      flex: 1;
+      position: relative;
+    }
+
+    .formique-builder .input-main {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .formique-builder .input-main:focus {
+      outline: none;
+      border-color: var(--uf-color-primary);
+      box-shadow: 0 0 0 2px rgba(57, 160, 202, 0.1);
+    }
+
+    .formique-builder .placeholder-text {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      color: var(--uf-color-text-secondary);
+      pointer-events: none;
+      background: white;
+      padding: 0 4px;
+      font-size: 13px;
+    }
+
+    .formique-builder .input-main:focus + .placeholder-text,
+    .formique-builder .input-main:not(:placeholder-shown) + .placeholder-text {
+      display: none;
+    }
+
+    .formique-builder .block-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .formique-builder .control-btn {
+      background: none;
+      border: none;
+      color: var(--uf-color-text-secondary);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 3px;
+      transition: all 0.2s;
+      font-size: 12px;
+    }
+
+    .formique-builder .control-btn:hover {
+      background: #f3f4f6;
+      color: var(--uf-color-text-dark);
+    }
+
+    .formique-builder .required-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--uf-color-text-secondary);
+    }
+
+    .formique-builder .required-toggle input {
+      margin: 0;
+    }
+
+    .formique-builder .type-indicator {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--uf-color-primary);
+      font-size: 12px;
+    }
+
+    .formique-builder .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 350px;
+      max-height: 250px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      box-shadow: var(--uf-shadow-lg);
+      z-index: 1000;
+      display: none;
+    }
+
+    .formique-builder .dropdown.active {
+      display: block;
+    }
+
+    .formique-builder .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--uf-color-border-subtle);
+      transition: background 0.2s;
+      font-size: 13px;
+    }
+
+    .formique-builder .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .formique-builder .dropdown-item:hover {
+      background: #f9fafb;
+    }
+
+    .formique-builder .dropdown-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--uf-color-primary);
+      font-size: 12px;
+    }
+
+    .formique-builder .dropdown-name {
+      font-weight: 500;
+      color: var(--uf-color-text-dark);
+    }
+
+    .formique-builder .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 15px;
+    }
+
+    .formique-builder .modal-overlay.active {
+      display: flex;
+    }
+
+    .formique-builder .modal {
+      background: white;
+      border-radius: var(--uf-radius-lg);
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      box-shadow: var(--uf-shadow-lg);
+    }
+
+    @media (max-width: 768px) {
+      .formique-builder .modal {
+        flex-direction: column;
+        max-height: 70vh;
+      }
+    }
+
+    .formique-builder .modal-sidebar {
+      width: 200px;
+      background: #f9fafb;
+      border-right: 1px solid var(--uf-color-border-subtle);
+      overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+      .formique-builder .modal-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--uf-color-border-subtle);
+      }
+    }
+
+    .formique-builder .modal-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .formique-builder .element-list {
+      list-style: none;
+    }
+
+    .formique-builder .element-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--uf-color-border-subtle);
+      transition: background 0.2s;
+      font-size: 13px;
+    }
+
+    .formique-builder .element-item:hover {
+      background: white;
+    }
+
+    .formique-builder .element-item.active {
+      background: white;
+      border-right: 2px solid var(--uf-color-primary);
+    }
+
+    .formique-builder .element-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--uf-color-primary);
+      font-size: 12px;
+    }
+
+    .formique-builder .element-name {
+      font-weight: 500;
+      color: var(--uf-color-text-dark);
+    }
+
+    .formique-builder .element-description {
+      margin-bottom: 15px;
+      color: var(--uf-color-text-secondary);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .formique-builder .element-preview {
+      background: #f8fafc;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .formique-builder .preview-label {
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--uf-color-text-dark);
+      font-size: 13px;
+    }
+
+    .formique-builder .preview-input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      background: white;
+      font-size: 13px;
+    }
+
+    .formique-builder .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .formique-builder .btn {
+      padding: 8px 16px;
+      border-radius: var(--uf-radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-size: 13px;
+    }
+
+    .formique-builder .btn-primary {
+      background: var(--uf-color-primary);
+      color: white;
+    }
+
+    .formique-builder .btn-primary:hover {
+      background: #2d8db8;
+    }
+
+    .formique-builder .btn-outline {
+      background: transparent;
+      border: 1px solid var(--uf-color-border-subtle);
+      color: var(--uf-color-text-dark);
+    }
+
+    .formique-builder .btn-outline:hover {
+      background: #f9fafb;
+    }
+
+    .formique-builder .options-modal {
+      position: fixed;
+      width: 320px;
+      max-height: 80vh;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      box-shadow: var(--uf-shadow-lg);
+      z-index: 1000;
+      display: none;
+      padding: 15px;
+      cursor: move;
+    }
+
+    .formique-builder .options-modal.active {
+      display: block;
+    }
+
+    .formique-builder .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--uf-color-border-subtle);
+      cursor: move;
+    }
+
+    .formique-builder .modal-header h4 {
+      color: var(--uf-color-text-dark);
+      font-size: 14px;
+    }
+
+    .formique-builder .close-modal {
+      background: none;
+      border: none;
+      color: var(--uf-color-text-secondary);
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .formique-builder .option-group {
+      margin-bottom: 15px;
+    }
+
+    .formique-builder .option-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--uf-color-text-dark);
+      font-size: 13px;
+    }
+
+    .formique-builder .option-input,
+    .formique-builder .option-select {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      font-size: 13px;
+    }
+
+    .formique-builder .option-textarea {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      font-size: 13px;
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .formique-builder .option-checkbox {
+      margin-right: 8px;
+    }
+
+    .formique-builder .checkbox-label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .formique-builder .toast {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: var(--uf-color-text-dark);
+      color: white;
+      padding: 10px 16px;
+      border-radius: var(--uf-radius-md);
+      box-shadow: var(--uf-shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 3000;
+      font-size: 13px;
+    }
+
+    .formique-builder .toast.active {
+      display: flex;
+    }
+
+    .formique-builder .toast-undo {
+      color: var(--uf-color-primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .formique-builder .empty-state {
+      text-align: center;
+      padding: 40px 15px;
+      color: var(--uf-color-text-secondary);
+    }
+
+    .formique-builder .empty-state i {
+      font-size: 36px;
+      margin-bottom: 15px;
+      color: var(--uf-color-border-subtle);
+    }
+
+    .formique-builder .form-settings-panel {
+      background: white;
+      border-radius: var(--uf-radius-lg);
+      padding: 20px;
+      box-shadow: var(--uf-shadow-md);
+      margin-bottom: 20px;
+    }
+
+    .formique-builder .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .formique-builder .settings-header h3 {
+      color: var(--uf-color-text-dark);
+      font-size: 1rem;
+    }
+
+    .formique-builder .settings-toggle {
+      background: none;
+      border: none;
+      color: var(--uf-color-primary);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .formique-builder .settings-content {
+      display: none;
+    }
+
+    .formique-builder .settings-content.active {
+      display: block;
+    }
+
+    .formique-builder .settings-group {
+      margin-bottom: 15px;
+    }
+
+    .formique-builder .settings-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--uf-color-text-dark);
+      font-size: 13px;
+    }
+
+    .formique-builder .settings-input,
+    .formique-builder .settings-select {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--uf-color-border-subtle);
+      border-radius: var(--uf-radius-md);
+      font-size: 13px;
+    }
+
+    .formique-builder .color-input-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .formique-builder .color-preview {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--uf-radius-md);
+      border: 1px solid var(--uf-color-border-subtle);
+    }
+
+    .formique-builder .drag-ghost {
+      opacity: 0.6;
+    }
+
+    .formique-builder .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      cursor: pointer;
+      border-bottom: 1px solid var(--uf-color-border-subtle);
+      margin-bottom: 10px;
+    }
+
+    .formique-builder .accordion-title {
+      font-weight: 600;
+      color: var(--uf-color-text-dark);
+      font-size: 13px;
+    }
+
+    .formique-builder .accordion-icon {
+      transition: transform 0.2s;
+    }
+
+    .formique-builder .accordion-content {
+      display: none;
+      margin-bottom: 15px;
+    }
+
+    .formique-builder .accordion-content.active {
+      display: block;
+    }
+
+    .formique-builder .accordion-header.active .accordion-icon {
+      transform: rotate(180deg);
+    }
+  `;
+
+  
+
 class FormiqueBuilder {
   constructor(containerId = 'formique-builder', options = {}) {
+
+    // Inject styles first (prevents FOUC)
+    this.injectStyles();
+    
     this.container = document.getElementById(containerId);
     if (!this.container) {
       console.error(`FormiqueBuilder: Container #${containerId} not found`);
       return;
     }
+
+    // Add the formique-builder class to the container
+    this.container.classList.add('formique-builder');
+
+            
+      this.container = document.getElementById(containerId);
+      if (!this.container) {
+        console.error(`FormiqueBuilder: Container #${containerId} not found`);
+        return;
+      }
+
+      // Add the formique-builder class to the container
+      this.container.classList.add('formique-builder');
+
 
     // Options with defaults
     this.options = {
@@ -499,6 +1255,17 @@ class FormiqueBuilder {
     this.init();
   }
 
+
+ injectStyles() {
+    // Check if styles already injected
+    if (document.getElementById('formique-builder-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'formique-builder-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+
   init() {
     // Insert the HTML template into container
     this.container.innerHTML = this.getTemplate();
@@ -678,6 +1445,8 @@ class FormiqueBuilder {
     }
 
     // Copy button
+    if(this.elements.copyBtn) {
+
     this.elements.copyBtn.addEventListener('click', () => {
       this.elements.output.select();
       document.execCommand('copy');
@@ -688,13 +1457,17 @@ class FormiqueBuilder {
         this.elements.copyBtn.innerHTML = original;
       }, 2000);
     });
+ 
+    }
 
     // Submit button
+    if(this.elements.submitBtn) {
     this.elements.submitBtn.addEventListener('click', () => {
       const output = this.elements.output.value;
       console.log('Formique Output:', output);
       alert('Form submitted! Check console.');
     });
+}
 
     // Undo button
     this.elements.undoBtn.addEventListener('click', () => {
