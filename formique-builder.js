@@ -1007,131 +1007,12 @@ class FormiqueBuilder {
   }
 
   renderFormPreview() {
-    if (!this.elements.preview) return;
-    
-    this.elements.preview.innerHTML = '';
-    
-    if (this.formData.fields.length === 0) {
-      this.elements.emptyState.style.display = 'block';
-      const addBlockDiv = document.createElement('div');
-      addBlockDiv.className = 'add-block-center';
-      addBlockDiv.innerHTML = `<button class="add-block-btn" id="addBlockCenter"><i class="fas fa-plus"></i></button>`;
-      this.elements.preview.appendChild(addBlockDiv);
-      
-      addBlockDiv.querySelector('#addBlockCenter').addEventListener('click', () => {
-        this.addFormBlock();
-      });
-      return;
-    }
-    
-    this.elements.emptyState.style.display = 'none';
-    
-    this.formData.fields.forEach((field, index) => {
-      const block = document.createElement('div');
-      block.className = 'form-block';
-      block.dataset.id = field.id;
-      
-      const config = this.formConfig.form_input_types[field.type] || this.formConfig.form_input_types.text;
-      
-      const fieldNameDisplay = field.required ? `${field.name}*` : field.name;
-      
-      block.innerHTML = `
-        <div class="drag-handle">
-          <i class="fas fa-grip-vertical"></i>
-        </div>
-        <button class="add-element-btn" data-index="${index}">
-          <i class="fas fa-plus"></i>
-        </button>
-        <div class="input-area">
-          <input type="text" class="input-main" placeholder=" " value="${fieldNameDisplay}">
-          <div class="placeholder-text">${field.placeholder || ''}</div>
-          <div class="dropdown">
-            ${Object.entries(this.formConfig.form_input_types).map(([key, config]) => `
-              <div class="dropdown-item" data-type="${key}">
-                <div class="dropdown-icon"><i class="${config.icon}"></i></div>
-                <div class="dropdown-name">${config.display_name}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        <div class="block-controls">
-          <label class="required-toggle">
-            <input type="checkbox" ${field.required ? 'checked' : ''}>
-            <span>Required </span>
-          </label>
-          <button class="control-btn options-btn">
-            <i class="fas fa-cog"></i>
-          </button>
-          <button class="control-btn delete-btn">
-            <i class="fas fa-trash"></i>
-          </button>
-          <div class="type-indicator">
-            <i class="${config.icon}"></i>
-          </div>
-        </div>
-      `;
-      
-      this.elements.preview.appendChild(block);
-      
-      const input = block.querySelector('.input-main');
-      const dropdown = block.querySelector('.dropdown');
-      const addBtn = block.querySelector('.add-element-btn');
-      const deleteBtn = block.querySelector('.delete-btn');
-      const optionsBtn = block.querySelector('.options-btn');
-      const requiredToggle = block.querySelector('input[type="checkbox"]');
-      
-      input.addEventListener('focus', () => {
-        block.classList.add('selected');
-      });
-      
-      input.addEventListener('blur', () => {
-        block.classList.remove('selected');
-        const nameWithoutAsterisk = input.value.replace(/\*$/, '');
-        this.updateFieldName(field.id, nameWithoutAsterisk);
-      });
-      
-      input.addEventListener('input', (e) => {
-        if (e.data === '@') {
-          this.showDropdown(dropdown, field.id);
-        } else {
-          this.hideDropdown(dropdown);
-        }
-      });
-      
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          this.addFormBlock(null, index + 1);
-          setTimeout(() => {
-            const newBlock = this.elements.preview.children[index + 1];
-            if (newBlock) {
-              const newInput = newBlock.querySelector('.input-main');
-              newInput.focus();
-            }
-          }, 10);
-        }
-      });
-      
-      addBtn.addEventListener('click', () => {
-        this.showModal(index);
-      });
-      
-      deleteBtn.addEventListener('click', () => {
-        this.deleteField(field.id, index);
-      });
-      
-      optionsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.showOptionsModal(field.id, block);
-      });
-      
-      requiredToggle.addEventListener('change', () => {
-        this.updateFieldRequired(field.id, requiredToggle.checked);
-        const newValue = requiredToggle.checked ? `${field.name}*` : field.name;
-        input.value = newValue;
-      });
-    });
-    
+  if (!this.elements.preview) return;
+  
+  this.elements.preview.innerHTML = '';
+  
+  if (this.formData.fields.length === 0) {
+    this.elements.emptyState.style.display = 'block';
     const addBlockDiv = document.createElement('div');
     addBlockDiv.className = 'add-block-center';
     addBlockDiv.innerHTML = `<button class="add-block-btn" id="addBlockCenter"><i class="fas fa-plus"></i></button>`;
@@ -1140,18 +1021,151 @@ class FormiqueBuilder {
     addBlockDiv.querySelector('#addBlockCenter').addEventListener('click', () => {
       this.addFormBlock();
     });
-    
-    this.container.querySelectorAll('.dropdown-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const type = item.dataset.type;
-        const fieldId = item.closest('.form-block')?.dataset.id;
-        if (fieldId) {
-          this.updateFieldType(fieldId, type);
-          this.hideAllDropdowns();
-        }
-      });
-    });
+    return;
   }
+  
+  this.elements.emptyState.style.display = 'none';
+  
+  this.formData.fields.forEach((field, index) => {
+    const block = document.createElement('div');
+    block.className = 'form-block';
+    block.dataset.id = field.id;
+    
+    const config = this.formConfig.form_input_types[field.type] || this.formConfig.form_input_types.text;
+    // FIX 4: Add fallback icon
+    const icon = config.icon || 'fas fa-question-circle';
+    
+    const fieldNameDisplay = field.required ? `${field.name}*` : field.name;
+    
+    block.innerHTML = `
+      <div class="drag-handle">
+        <i class="fas fa-grip-vertical"></i>
+      </div>
+      <button class="add-element-btn" data-index="${index}">
+        <i class="fas fa-plus"></i>
+      </button>
+      <div class="input-area">
+        <input type="text" class="input-main" placeholder=" " value="${fieldNameDisplay}">
+        <div class="placeholder-text">${field.placeholder || ''}</div>
+        <div class="dropdown">
+          ${Object.entries(this.formConfig.form_input_types).map(([key, config]) => `
+            <div class="dropdown-item" data-type="${key}">
+              <div class="dropdown-icon"><i class="${config.icon}"></i></div>
+              <div class="dropdown-name">${config.display_name}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="block-controls">
+        <label class="required-toggle">
+          <input type="checkbox" ${field.required ? 'checked' : ''}>
+          <span>Required </span>
+        </label>
+        <button class="control-btn options-btn">
+          <i class="fas fa-cog"></i>
+        </button>
+        <button class="control-btn delete-btn">
+          <i class="fas fa-trash"></i>
+        </button>
+        <div class="type-indicator">
+          <i class="${icon}"></i>
+        </div>
+      </div>
+    `;
+    
+    this.elements.preview.appendChild(block);
+    
+    const input = block.querySelector('.input-main');
+    const dropdown = block.querySelector('.dropdown');
+    const addBtn = block.querySelector('.add-element-btn');
+    const deleteBtn = block.querySelector('.delete-btn');
+    const optionsBtn = block.querySelector('.options-btn');
+    const requiredToggle = block.querySelector('input[type="checkbox"]');
+    
+    input.addEventListener('focus', () => {
+      block.classList.add('selected');
+    });
+    
+    input.addEventListener('blur', () => {
+      block.classList.remove('selected');
+      const nameWithoutAsterisk = input.value.replace(/\*$/, '');
+      this.updateFieldName(field.id, nameWithoutAsterisk);
+    });
+    
+    input.addEventListener('input', (e) => {
+      if (e.data === '@') {
+        this.showDropdown(dropdown, field.id);
+      } else {
+        this.hideDropdown(dropdown);
+      }
+    });
+    
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.addFormBlock(null, index + 1);
+        setTimeout(() => {
+          const newBlock = this.elements.preview.children[index + 1];
+          if (newBlock) {
+            const newInput = newBlock.querySelector('.input-main');
+            newInput.focus();
+          }
+        }, 10);
+      }
+    });
+    
+    addBtn.addEventListener('click', () => {
+      this.showModal(index);
+    });
+    
+    deleteBtn.addEventListener('click', () => {
+      this.deleteField(field.id, index);
+    });
+    
+    optionsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.showOptionsModal(field.id, block);
+    });
+    
+    requiredToggle.addEventListener('change', () => {
+      this.updateFieldRequired(field.id, requiredToggle.checked);
+      const newValue = requiredToggle.checked ? `${field.name}*` : field.name;
+      input.value = newValue;
+    });
+  });
+  
+  const addBlockDiv = document.createElement('div');
+  addBlockDiv.className = 'add-block-center';
+  addBlockDiv.innerHTML = `<button class="add-block-btn" id="addBlockCenter"><i class="fas fa-plus"></i></button>`;
+  this.elements.preview.appendChild(addBlockDiv);
+  
+  addBlockDiv.querySelector('#addBlockCenter').addEventListener('click', () => {
+    this.addFormBlock();
+  });
+  
+  // FIX 2: Updated dropdown click handler with icon update
+  this.container.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const type = item.dataset.type;
+      const fieldId = item.closest('.form-block')?.dataset.id;
+      if (fieldId) {
+        this.updateFieldType(fieldId, type);
+        // Update icon immediately
+        const block = item.closest('.form-block');
+        if (block) {
+          const config = this.formConfig.form_input_types[type];
+          const iconElement = block.querySelector('.type-indicator i');
+          if (iconElement && config) {
+            iconElement.className = config.icon || 'fas fa-question-circle';
+          }
+        }
+        this.hideAllDropdowns();
+      }
+    });
+  });
+}
+
+
 
   showDropdown(dropdown, fieldId) {
     this.hideAllDropdowns();
