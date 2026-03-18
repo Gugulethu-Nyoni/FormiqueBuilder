@@ -567,14 +567,18 @@ class FormiqueBuilder {
 
         <div class="output-panel">
           <div class="output-header">
-            <h3>Formique Output</h3>
+           <!-- <h3>Formique Output</h3> -->
             <div class="output-actions">
-              <button class="copy-btn" id="copyOutput">
+              <!-- <button class="copy-btn" id="copyOutput">
                 <i class="fas fa-copy"></i> Copy
               </button>
+              
+
               <button class="submit-btn" id="submitForm">
                 <i class="fas fa-paper-plane"></i> Submit
               </button>
+              -->
+
             </div>
           </div>
           <textarea id="formiqueOutput">@form: user-registration
@@ -940,7 +944,8 @@ class FormiqueBuilder {
 
   addFormBlock(type = null, index = null) {
     const blockId = Date.now().toString();
-    const fieldName = type ? this.generateFieldName(type) : 'field-name';
+    //const fieldName = type ? this.generateFieldName(type) : 'field-nameL';
+    const fieldName = type ? this.generateFieldName(type) : 'Delete this and type @ to select input type';
     
     const field = {
       id: blockId,
@@ -1164,8 +1169,6 @@ class FormiqueBuilder {
     });
   });
 }
-
-
 
   showDropdown(dropdown, fieldId) {
     this.hideAllDropdowns();
