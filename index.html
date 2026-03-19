@@ -20,7 +20,13 @@
         // Initialize the builder
         //const builder = new FormiqueBuilder();
 
-        const builder = new FormiqueBuilder('formique-builder', { showFormSettings: false });
+        const builderOptions = {
+        showFormSettings: false
+        // Add more options here as needed
+    };
+    
+    // Initialize the builder with options
+    const builder = new FormiqueBuilder(builderOptions);
 
         
         // Optional: Log output to console when it changes

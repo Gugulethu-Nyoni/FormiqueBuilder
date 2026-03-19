@@ -825,24 +825,23 @@ const css = `
   
 
 class FormiqueBuilder {
-  constructor(containerId = 'formique-builder', options = {}) {
-
-    this.containerId = containerId;
-    this.options = options;
-    this.container = document.getElementById(containerId);
+  constructor(options = {}) {
+    // Default options
+    const defaultOptions = {
+      containerId: 'formique-builder',
+      showFormSettings: true
+    };
+    
+    // Merge provided options with defaults
+    this.options = { ...defaultOptions, ...options };
+    
+    // Get container
+    this.container = document.getElementById(this.options.containerId);
 
     if (!this.container) {
-      console.error(`FormiqueBuilder: Container #${containerId} not found`);
+      console.error(`FormiqueBuilder: Container #${this.options.containerId} not found`);
       return;
     }
-
-
-
-    // Options with defaults
-    this.options = {
-      showFormSettings: true, // visible by default
-      ...options
-    };
 
     // Form data model
     this.formData = {
