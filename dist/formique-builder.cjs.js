@@ -8,7 +8,7 @@ var formiqueBuilder$1 = {exports: {}};
 
 (function (module) {
 	const css = `
-    .formique-builder {
+.formique-builder {
   --uf-color-primary: #39a0ca;
   --uf-color-accent: #ff6b8b;
   --uf-color-secondary: #9c6bff;
@@ -58,12 +58,6 @@ var formiqueBuilder$1 = {exports: {}};
   grid-template-columns: 1fr 350px;
   gap: 20px;
   margin-bottom: 30px;
-}
-
-@media (max-width: 768px) {
-  .formique-builder .builder-container {
-    grid-template-columns: 1fr;
-  }
 }
 
 .formique-builder .form-preview {
@@ -168,6 +162,7 @@ var formiqueBuilder$1 = {exports: {}};
   margin: 0;
 }
 
+/* Form Block Styles - Consolidated with latest fixes */
 .formique-builder .form-block {
   display: flex;
   align-items: center;
@@ -180,6 +175,9 @@ var formiqueBuilder$1 = {exports: {}};
   transition: all 0.2s ease;
   position: relative;
   font-size: 13px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .formique-builder .form-block:hover {
@@ -219,6 +217,7 @@ var formiqueBuilder$1 = {exports: {}};
 .formique-builder .input-area {
   flex: 1;
   position: relative;
+  min-width: 200px;
 }
 
 .formique-builder .input-main {
@@ -228,6 +227,7 @@ var formiqueBuilder$1 = {exports: {}};
   border-radius: var(--uf-radius-md);
   font-size: 13px;
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 
 .formique-builder .input-main:focus {
@@ -257,6 +257,9 @@ var formiqueBuilder$1 = {exports: {}};
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
+  min-width: fit-content;
+  margin-left: auto;
 }
 
 .formique-builder .control-btn {
@@ -281,10 +284,17 @@ var formiqueBuilder$1 = {exports: {}};
   gap: 4px;
   font-size: 11px;
   color: var(--uf-color-text-secondary);
+  white-space: nowrap;
 }
 
-.formique-builder .required-toggle input {
+.formique-builder .required-toggle input[type="checkbox"] {
   margin: 0;
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+  opacity: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .formique-builder .type-indicator {
@@ -297,6 +307,7 @@ var formiqueBuilder$1 = {exports: {}};
   font-size: 12px;
 }
 
+/* Dropdown Styles */
 .formique-builder .dropdown {
   position: absolute;
   top: 100%;
@@ -350,6 +361,7 @@ var formiqueBuilder$1 = {exports: {}};
   color: var(--uf-color-text-dark);
 }
 
+/* Modal Styles */
 .formique-builder .modal-overlay {
   position: fixed;
   top: 0;
@@ -379,26 +391,11 @@ var formiqueBuilder$1 = {exports: {}};
   box-shadow: var(--uf-shadow-lg);
 }
 
-@media (max-width: 768px) {
-  .formique-builder .modal {
-    flex-direction: column;
-    max-height: 70vh;
-  }
-}
-
 .formique-builder .modal-sidebar {
   width: 200px;
   background: #f9fafb;
   border-right: 1px solid var(--uf-color-border-subtle);
   overflow-y: auto;
-}
-
-@media (max-width: 768px) {
-  .formique-builder .modal-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--uf-color-border-subtle);
-  }
 }
 
 .formique-builder .modal-content {
@@ -512,6 +509,7 @@ var formiqueBuilder$1 = {exports: {}};
   background: #f9fafb;
 }
 
+/* Options Modal - Consolidated with latest mobile fixes */
 .formique-builder .options-modal {
   position: fixed;
   width: 320px;
@@ -596,6 +594,7 @@ var formiqueBuilder$1 = {exports: {}};
   font-size: 13px;
 }
 
+/* Toast Styles */
 .formique-builder .toast {
   position: fixed;
   bottom: 15px;
@@ -625,6 +624,7 @@ var formiqueBuilder$1 = {exports: {}};
   font-size: 13px;
 }
 
+/* Empty State */
 .formique-builder .empty-state {
   text-align: center;
   padding: 40px 15px;
@@ -637,6 +637,7 @@ var formiqueBuilder$1 = {exports: {}};
   color: var(--uf-color-border-subtle);
 }
 
+/* Form Settings Panel */
 .formique-builder .form-settings-panel {
   background: white;
   border-radius: var(--uf-radius-lg);
@@ -744,73 +745,21 @@ var formiqueBuilder$1 = {exports: {}};
   transform: rotate(180deg);
 }
 
-    /* Replace these sections in your CSS */
-
-.formique-builder .form-block {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px dashed var(--uf-color-border-subtle);
-  border-radius: var(--uf-radius-md);
-  margin-bottom: 10px;
-  background: white;
-  transition: all 0.2s ease;
-  position: relative;
-  font-size: 13px;
-  width: 100%;
-  box-sizing: border-box;
-  flex-wrap: wrap; /* Allow wrapping on mobile */
-}
-
-.formique-builder .input-area {
-  flex: 1;
-  position: relative;
-  min-width: 200px; /* Minimum width for input area */
-}
-
-.formique-builder .input-main {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--uf-color-border-subtle);
-  border-radius: var(--uf-radius-md);
-  font-size: 13px;
-  transition: all 0.2s;
-  box-sizing: border-box;
-}
-
-.formique-builder .block-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  min-width: fit-content;
-  margin-left: auto; /* Push controls to the right */
-}
-
-.formique-builder .required-toggle {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  color: var(--uf-color-text-secondary);
-  white-space: nowrap;
-}
-
-.formique-builder .required-toggle input[type="checkbox"] {
-  margin: 0;
-  width: 13px;
-  height: 13px;
-  cursor: pointer;
-  opacity: 1;
-  position: relative;
-  z-index: 1;
-}
-
-/* Mobile responsiveness */
+/* Mobile Responsive Styles - Consolidated at the end for precedence */
 @media (max-width: 768px) {
   .formique-builder .builder-container {
     grid-template-columns: 1fr;
+  }
+  
+  .formique-builder .modal {
+    flex-direction: column;
+    max-height: 70vh;
+  }
+  
+  .formique-builder .modal-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--uf-color-border-subtle);
   }
   
   .formique-builder .form-block {
@@ -820,7 +769,7 @@ var formiqueBuilder$1 = {exports: {}};
   }
   
   .formique-builder .input-area {
-    min-width: 100%; /* Full width on mobile */
+    min-width: 100%;
   }
   
   .formique-builder .block-controls {
@@ -835,6 +784,22 @@ var formiqueBuilder$1 = {exports: {}};
   
   .formique-builder .add-element-btn {
     align-self: flex-start;
+  }
+  
+  /* Options modal mobile styles */
+  .formique-builder .options-modal {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 320px;
+    margin: 0;
+    cursor: default;
+  }
+  
+  .formique-builder .options-modal .modal-header {
+    cursor: default;
   }
 }
 
@@ -851,52 +816,14 @@ var formiqueBuilder$1 = {exports: {}};
   }
   
   .formique-builder .required-toggle {
-    white-space: normal; /* Allow text to wrap on very small screens */
+    white-space: normal;
   }
   
   .formique-builder .input-main {
     padding: 6px 8px;
     font-size: 12px;
   }
-}
-
-    /* Add to your CSS */
-
-.formique-builder .options-modal {
-  position: fixed;
-  width: 320px;
-  max-height: 80vh;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid var(--uf-color-border-subtle);
-  border-radius: var(--uf-radius-md);
-  box-shadow: var(--uf-shadow-lg);
-  z-index: 1000;
-  display: none;
-  padding: 15px;
-  cursor: move;
-}
-
-/* Mobile responsiveness for options modal */
-@media (max-width: 768px) {
-  .formique-builder .options-modal {
-    position: fixed;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 320px;
-    margin: 0;
-    cursor: default; /* Disable dragging on mobile */
-  }
   
-  .formique-builder .options-modal .modal-header {
-    cursor: default; /* Disable dragging on mobile */
-  }
-}
-
-/* Small mobile devices */
-@media (max-width: 480px) {
   .formique-builder .options-modal {
     width: 95%;
     padding: 12px;
@@ -2426,11 +2353,13 @@ var formiqueBuilder$1 = {exports: {}};
     </div>
     <div class="accordion-content" id="conditionalContent">
       
+      <!--
       <div class="checkbox-label">
         <input type="checkbox" class="option-checkbox" id="option_behavior_conditional_logic_enabled" 
                ${conditionalLogic.enabled ? 'checked' : ''}>
         <label for="option_behavior_conditional_logic_enabled">Enable Conditional Display</label>
       </div>
+      -->
       
       
       <div class="option-group">
@@ -2730,8 +2659,7 @@ var formiqueBuilder$1 = {exports: {}};
 	    };
 	  }
 	  
-	  // *** SAVE CONDITIONAL LOGIC SEPARATELY ***
-	  // *** SAVE CONDITIONAL LOGIC SEPARATELY ***
+	// *** SAVE CONDITIONAL LOGIC SEPARATELY ***
 	const dependsOnInput = this.container.querySelector('#option_behavior_conditional_logic_dependsOn');
 	const dependentsInput = this.container.querySelector('#option_behavior_conditional_logic_dependents');
 	const conditionValueInput = this.container.querySelector('#option_behavior_conditional_logic_condition_value');
