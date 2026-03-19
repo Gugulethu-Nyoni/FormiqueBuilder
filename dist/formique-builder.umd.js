@@ -39,12 +39,12 @@
   font-size: 14px;
 }
 
-.formique-builder .header {
+.formique-builder .formique-builder-header {
   text-align: center;
   margin-bottom: 25px;
 }
 
-.formique-builder .header h1 {
+.formique-builder .formique-builder-header h1 {
   font-size: 1.8rem;
   margin-bottom: 8px;
   background: linear-gradient(135deg, var(--uf-color-primary) 0%, var(--uf-color-secondary) 100%);
@@ -52,19 +52,19 @@
   -webkit-text-fill-color: transparent;
 }
 
-.formique-builder .header p {
+.formique-builder .formique-builder-header p {
   color: var(--uf-color-text-secondary);
   font-size: 0.9rem;
 }
 
-.formique-builder .builder-container {
+.formique-builder .formique-builder-container {
   display: grid;
   grid-template-columns: 1fr 350px;
   gap: 20px;
   margin-bottom: 30px;
 }
 
-.formique-builder .form-preview {
+.formique-builder .formique-builder-preview {
   background: white;
   border-radius: var(--uf-radius-lg);
   padding: 20px;
@@ -72,12 +72,12 @@
   min-height: 300px;
 }
 
-.formique-builder .add-block-center {
+.formique-builder .formique-builder-add-center {
   text-align: center;
   margin-top: 10px;
 }
 
-.formique-builder .add-block-btn {
+.formique-builder .formique-builder-add-btn {
   background: var(--uf-color-primary);
   color: white;
   border: none;
@@ -92,12 +92,12 @@
   transition: all 0.2s;
 }
 
-.formique-builder .add-block-btn:hover {
+.formique-builder .formique-builder-add-btn:hover {
   background: #2d8db8;
   transform: scale(1.1);
 }
 
-.formique-builder .output-panel {
+.formique-builder .formique-builder-output-panel {
   background: white;
   border-radius: var(--uf-radius-lg);
   padding: 20px;
@@ -106,7 +106,7 @@
   flex-direction: column;
 }
 
-.formique-builder .output-header {
+.formique-builder .formique-builder-output-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,19 +114,19 @@
   padding: 0;
 }
 
-.formique-builder .output-header h3 {
+.formique-builder .formique-builder-output-header h3 {
   color: var(--uf-color-text-dark);
   font-size: 1rem;
   margin: 0;
 }
 
-.formique-builder .output-actions {
+.formique-builder .formique-builder-output-actions {
   display: flex;
   gap: 8px;
 }
 
-.formique-builder .copy-btn,
-.formique-builder .submit-btn {
+.formique-builder .formique-builder-copy-btn,
+.formique-builder .formique-builder-submit-btn {
   background: var(--uf-color-primary);
   color: white;
   border: none;
@@ -140,19 +140,19 @@
   transition: all 0.2s;
 }
 
-.formique-builder .submit-btn {
+.formique-builder .formique-builder-submit-btn {
   background: var(--uf-color-secondary);
 }
 
-.formique-builder .copy-btn:hover {
+.formique-builder .formique-builder-copy-btn:hover {
   background: #2d8db8;
 }
 
-.formique-builder .submit-btn:hover {
+.formique-builder .formique-builder-submit-btn:hover {
   background: #8a5bff;
 }
 
-.formique-builder #formiqueOutput {
+.formique-builder #formique-builder-output {
   width: 100%;
   height: 200px;
   border: 1px solid var(--uf-color-border-subtle);
@@ -166,8 +166,8 @@
   margin: 0;
 }
 
-/* Form Block Styles - Consolidated with latest fixes */
-.formique-builder .form-block {
+/* Form Block Styles - Scoped */
+.formique-builder .formique-builder-block {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -184,27 +184,27 @@
   flex-wrap: wrap;
 }
 
-.formique-builder .form-block:hover {
+.formique-builder .formique-builder-block:hover {
   border-color: var(--uf-color-primary);
 }
 
-.formique-builder .form-block.selected {
+.formique-builder .formique-builder-block.selected {
   border-color: var(--uf-color-primary);
   background: #f0f9ff;
 }
 
-.formique-builder .drag-handle {
+.formique-builder .formique-builder-drag-handle {
   cursor: grab;
   color: var(--uf-color-text-secondary);
   padding: 4px;
   font-size: 12px;
 }
 
-.formique-builder .drag-handle:active {
+.formique-builder .formique-builder-drag-handle:active {
   cursor: grabbing;
 }
 
-.formique-builder .add-element-btn {
+.formique-builder .formique-builder-add-element-btn {
   background: var(--uf-color-primary);
   color: white;
   border: none;
@@ -218,13 +218,13 @@
   font-size: 12px;
 }
 
-.formique-builder .input-area {
+.formique-builder .formique-builder-input-area {
   flex: 1;
   position: relative;
   min-width: 200px;
 }
 
-.formique-builder .input-main {
+.formique-builder .formique-builder-input-main {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--uf-color-border-subtle);
@@ -234,13 +234,13 @@
   box-sizing: border-box;
 }
 
-.formique-builder .input-main:focus {
+.formique-builder .formique-builder-input-main:focus {
   outline: none;
   border-color: var(--uf-color-primary);
   box-shadow: 0 0 0 2px rgba(57, 160, 202, 0.1);
 }
 
-.formique-builder .placeholder-text {
+.formique-builder .formique-builder-placeholder-text {
   position: absolute;
   top: 50%;
   left: 10px;
@@ -252,12 +252,12 @@
   font-size: 13px;
 }
 
-.formique-builder .input-main:focus + .placeholder-text,
-.formique-builder .input-main:not(:placeholder-shown) + .placeholder-text {
+.formique-builder .formique-builder-input-main:focus + .formique-builder-placeholder-text,
+.formique-builder .formique-builder-input-main:not(:placeholder-shown) + .formique-builder-placeholder-text {
   display: none;
 }
 
-.formique-builder .block-controls {
+.formique-builder .formique-builder-block-controls {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -266,7 +266,7 @@
   margin-left: auto;
 }
 
-.formique-builder .control-btn {
+.formique-builder .formique-builder-control-btn {
   background: none;
   border: none;
   color: var(--uf-color-text-secondary);
@@ -277,12 +277,12 @@
   font-size: 12px;
 }
 
-.formique-builder .control-btn:hover {
+.formique-builder .formique-builder-control-btn:hover {
   background: #f3f4f6;
   color: var(--uf-color-text-dark);
 }
 
-.formique-builder .required-toggle {
+.formique-builder .formique-builder-required-toggle {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -291,7 +291,7 @@
   white-space: nowrap;
 }
 
-.formique-builder .required-toggle input[type="checkbox"] {
+.formique-builder .formique-builder-required-toggle input[type="checkbox"] {
   margin: 0;
   width: 13px;
   height: 13px;
@@ -301,7 +301,7 @@
   z-index: 1;
 }
 
-.formique-builder .type-indicator {
+.formique-builder .formique-builder-type-indicator {
   width: 20px;
   height: 20px;
   display: flex;
@@ -311,8 +311,8 @@
   font-size: 12px;
 }
 
-/* Dropdown Styles */
-.formique-builder .dropdown {
+/* Dropdown Styles - Scoped */
+.formique-builder .formique-builder-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
@@ -327,11 +327,11 @@
   display: none;
 }
 
-.formique-builder .dropdown.active {
+.formique-builder .formique-builder-dropdown.active {
   display: block;
 }
 
-.formique-builder .dropdown-item {
+.formique-builder .formique-builder-dropdown-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -342,15 +342,15 @@
   font-size: 13px;
 }
 
-.formique-builder .dropdown-item:last-child {
+.formique-builder .formique-builder-dropdown-item:last-child {
   border-bottom: none;
 }
 
-.formique-builder .dropdown-item:hover {
+.formique-builder .formique-builder-dropdown-item:hover {
   background: #f9fafb;
 }
 
-.formique-builder .dropdown-icon {
+.formique-builder .formique-builder-dropdown-icon {
   width: 16px;
   height: 16px;
   display: flex;
@@ -360,13 +360,13 @@
   font-size: 12px;
 }
 
-.formique-builder .dropdown-name {
+.formique-builder .formique-builder-dropdown-name {
   font-weight: 500;
   color: var(--uf-color-text-dark);
 }
 
-/* Modal Styles */
-.formique-builder .modal-overlay {
+/* Modal Styles - Scoped */
+.formique-builder .formique-builder-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -376,15 +376,15 @@
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 10000;
   padding: 15px;
 }
 
-.formique-builder .modal-overlay.active {
+.formique-builder .formique-builder-modal-overlay.active {
   display: flex;
 }
 
-.formique-builder .modal {
+.formique-builder .formique-builder-modal {
   background: white;
   border-radius: var(--uf-radius-lg);
   width: 100%;
@@ -395,24 +395,24 @@
   box-shadow: var(--uf-shadow-lg);
 }
 
-.formique-builder .modal-sidebar {
+.formique-builder .formique-builder-modal-sidebar {
   width: 200px;
   background: #f9fafb;
   border-right: 1px solid var(--uf-color-border-subtle);
   overflow-y: auto;
 }
 
-.formique-builder .modal-content {
+.formique-builder .formique-builder-modal-content {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
 }
 
-.formique-builder .element-list {
+.formique-builder .formique-builder-element-list {
   list-style: none;
 }
 
-.formique-builder .element-item {
+.formique-builder .formique-builder-element-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -423,16 +423,16 @@
   font-size: 13px;
 }
 
-.formique-builder .element-item:hover {
+.formique-builder .formique-builder-element-item:hover {
   background: white;
 }
 
-.formique-builder .element-item.active {
+.formique-builder .formique-builder-element-item.active {
   background: white;
   border-right: 2px solid var(--uf-color-primary);
 }
 
-.formique-builder .element-icon {
+.formique-builder .formique-builder-element-icon {
   width: 16px;
   height: 16px;
   display: flex;
@@ -442,19 +442,19 @@
   font-size: 12px;
 }
 
-.formique-builder .element-name {
+.formique-builder .formique-builder-element-name {
   font-weight: 500;
   color: var(--uf-color-text-dark);
 }
 
-.formique-builder .element-description {
+.formique-builder .formique-builder-element-description {
   margin-bottom: 15px;
   color: var(--uf-color-text-secondary);
   line-height: 1.5;
   font-size: 13px;
 }
 
-.formique-builder .element-preview {
+.formique-builder .formique-builder-element-preview {
   background: #f8fafc;
   border: 1px solid var(--uf-color-border-subtle);
   border-radius: var(--uf-radius-md);
@@ -462,14 +462,14 @@
   margin-top: 15px;
 }
 
-.formique-builder .preview-label {
+.formique-builder .formique-builder-preview-label {
   font-weight: 500;
   margin-bottom: 6px;
   color: var(--uf-color-text-dark);
   font-size: 13px;
 }
 
-.formique-builder .preview-input {
+.formique-builder .formique-builder-preview-input {
   width: 100%;
   padding: 6px 10px;
   border: 1px solid var(--uf-color-border-subtle);
@@ -478,13 +478,13 @@
   font-size: 13px;
 }
 
-.formique-builder .modal-actions {
+.formique-builder .formique-builder-modal-actions {
   display: flex;
   gap: 8px;
   margin-top: 20px;
 }
 
-.formique-builder .btn {
+.formique-builder .formique-builder-btn {
   padding: 8px 16px;
   border-radius: var(--uf-radius-md);
   font-weight: 600;
@@ -494,27 +494,27 @@
   font-size: 13px;
 }
 
-.formique-builder .btn-primary {
+.formique-builder .formique-builder-btn-primary {
   background: var(--uf-color-primary);
   color: white;
 }
 
-.formique-builder .btn-primary:hover {
+.formique-builder .formique-builder-btn-primary:hover {
   background: #2d8db8;
 }
 
-.formique-builder .btn-outline {
+.formique-builder .formique-builder-btn-outline {
   background: transparent;
   border: 1px solid var(--uf-color-border-subtle);
   color: var(--uf-color-text-dark);
 }
 
-.formique-builder .btn-outline:hover {
+.formique-builder .formique-builder-btn-outline:hover {
   background: #f9fafb;
 }
 
-/* Options Modal - Consolidated with latest mobile fixes */
-.formique-builder .options-modal {
+/* Options Modal - Scoped */
+.formique-builder .formique-builder-options-modal {
   position: fixed;
   width: 320px;
   max-height: 80vh;
@@ -523,17 +523,17 @@
   border: 1px solid var(--uf-color-border-subtle);
   border-radius: var(--uf-radius-md);
   box-shadow: var(--uf-shadow-lg);
-  z-index: 1000;
+  z-index: 10001;
   display: none;
   padding: 15px;
   cursor: move;
 }
 
-.formique-builder .options-modal.active {
+.formique-builder .formique-builder-options-modal.active {
   display: block;
 }
 
-.formique-builder .modal-header {
+.formique-builder .formique-builder-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -543,12 +543,12 @@
   cursor: move;
 }
 
-.formique-builder .modal-header h4 {
+.formique-builder .formique-builder-modal-header h4 {
   color: var(--uf-color-text-dark);
   font-size: 14px;
 }
 
-.formique-builder .close-modal {
+.formique-builder .formique-builder-close-modal {
   background: none;
   border: none;
   color: var(--uf-color-text-secondary);
@@ -556,11 +556,11 @@
   font-size: 16px;
 }
 
-.formique-builder .option-group {
+.formique-builder .formique-builder-option-group {
   margin-bottom: 15px;
 }
 
-.formique-builder .option-label {
+.formique-builder .formique-builder-option-label {
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
@@ -568,8 +568,8 @@
   font-size: 13px;
 }
 
-.formique-builder .option-input,
-.formique-builder .option-select {
+.formique-builder .formique-builder-option-input,
+.formique-builder .formique-builder-option-select {
   width: 100%;
   padding: 6px 10px;
   border: 1px solid var(--uf-color-border-subtle);
@@ -577,7 +577,7 @@
   font-size: 13px;
 }
 
-.formique-builder .option-textarea {
+.formique-builder .formique-builder-option-textarea {
   width: 100%;
   padding: 6px 10px;
   border: 1px solid var(--uf-color-border-subtle);
@@ -587,19 +587,19 @@
   min-height: 60px;
 }
 
-.formique-builder .option-checkbox {
+.formique-builder .formique-builder-option-checkbox {
   margin-right: 8px;
 }
 
-.formique-builder .checkbox-label {
+.formique-builder .formique-builder-checkbox-label {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
   font-size: 13px;
 }
 
-/* Toast Styles */
-.formique-builder .toast {
+/* Toast Styles - Scoped */
+.formique-builder .formique-builder-toast {
   position: fixed;
   bottom: 15px;
   right: 15px;
@@ -611,15 +611,15 @@
   display: none;
   align-items: center;
   gap: 12px;
-  z-index: 3000;
+  z-index: 10002;
   font-size: 13px;
 }
 
-.formique-builder .toast.active {
+.formique-builder .formique-builder-toast.active {
   display: flex;
 }
 
-.formique-builder .toast-undo {
+.formique-builder .formique-builder-toast-undo {
   color: var(--uf-color-primary);
   background: none;
   border: none;
@@ -628,21 +628,21 @@
   font-size: 13px;
 }
 
-/* Empty State */
-.formique-builder .empty-state {
+/* Empty State - Scoped */
+.formique-builder .formique-builder-empty-state {
   text-align: center;
   padding: 40px 15px;
   color: var(--uf-color-text-secondary);
 }
 
-.formique-builder .empty-state i {
+.formique-builder .formique-builder-empty-state i {
   font-size: 36px;
   margin-bottom: 15px;
   color: var(--uf-color-border-subtle);
 }
 
-/* Form Settings Panel */
-.formique-builder .form-settings-panel {
+/* Form Settings Panel - Scoped */
+.formique-builder .formique-builder-settings-panel {
   background: white;
   border-radius: var(--uf-radius-lg);
   padding: 20px;
@@ -650,19 +650,19 @@
   margin-bottom: 20px;
 }
 
-.formique-builder .settings-header {
+.formique-builder .formique-builder-settings-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
 
-.formique-builder .settings-header h3 {
+.formique-builder .formique-builder-settings-header h3 {
   color: var(--uf-color-text-dark);
   font-size: 1rem;
 }
 
-.formique-builder .settings-toggle {
+.formique-builder .formique-builder-settings-toggle {
   background: none;
   border: none;
   color: var(--uf-color-primary);
@@ -670,19 +670,19 @@
   font-size: 13px;
 }
 
-.formique-builder .settings-content {
+.formique-builder .formique-builder-settings-content {
   display: none;
 }
 
-.formique-builder .settings-content.active {
+.formique-builder .formique-builder-settings-content.active {
   display: block;
 }
 
-.formique-builder .settings-group {
+.formique-builder .formique-builder-settings-group {
   margin-bottom: 15px;
 }
 
-.formique-builder .settings-label {
+.formique-builder .formique-builder-settings-label {
   display: block;
   margin-bottom: 6px;
   font-weight: 500;
@@ -690,8 +690,8 @@
   font-size: 13px;
 }
 
-.formique-builder .settings-input,
-.formique-builder .settings-select {
+.formique-builder .formique-builder-settings-input,
+.formique-builder .formique-builder-settings-select {
   width: 100%;
   padding: 6px 10px;
   border: 1px solid var(--uf-color-border-subtle);
@@ -699,24 +699,26 @@
   font-size: 13px;
 }
 
-.formique-builder .color-input-container {
+.formique-builder .formique-builder-color-input-container {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.formique-builder .color-preview {
+.formique-builder .formique-builder-color-preview {
   width: 30px;
   height: 30px;
   border-radius: var(--uf-radius-md);
   border: 1px solid var(--uf-color-border-subtle);
 }
 
-.formique-builder .drag-ghost {
+.formique-builder .formique-builder-drag-ghost {
   opacity: 0.6;
 }
 
-.formique-builder .accordion-header {
+/* Accordion Styles - Scoped to settings panel and options modal */
+.formique-builder .formique-builder-settings-panel .formique-builder-accordion-header,
+.formique-builder .formique-builder-options-modal .formique-builder-accordion-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -726,72 +728,77 @@
   margin-bottom: 10px;
 }
 
-.formique-builder .accordion-title {
+.formique-builder .formique-builder-settings-panel .formique-builder-accordion-title,
+.formique-builder .formique-builder-options-modal .formique-builder-accordion-title {
   font-weight: 600;
   color: var(--uf-color-text-dark);
   font-size: 13px;
 }
 
-.formique-builder .accordion-icon {
+.formique-builder .formique-builder-settings-panel .formique-builder-accordion-icon,
+.formique-builder .formique-builder-options-modal .formique-builder-accordion-icon {
   transition: transform 0.2s;
 }
 
-.formique-builder .accordion-content {
+.formique-builder .formique-builder-settings-panel .formique-builder-accordion-content,
+.formique-builder .formique-builder-options-modal .formique-builder-accordion-content {
   display: none;
   margin-bottom: 15px;
 }
 
-.formique-builder .accordion-content.active {
+.formique-builder .formique-builder-settings-panel .formique-builder-accordion-content.active,
+.formique-builder .formique-builder-options-modal .formique-builder-accordion-content.active {
   display: block;
 }
 
-.formique-builder .accordion-header.active .accordion-icon {
+.formique-builder .formique-builder-settings-panel .formique-builder-accordion-header.active .formique-builder-accordion-icon,
+.formique-builder .formique-builder-options-modal .formique-builder-accordion-header.active .formique-builder-accordion-icon {
   transform: rotate(180deg);
 }
 
-/* Mobile Responsive Styles - Consolidated at the end for precedence */
+/* Mobile Responsive Styles */
 @media (max-width: 768px) {
-  .formique-builder .builder-container {
+  .formique-builder .formique-builder-container {
     grid-template-columns: 1fr;
   }
   
-  .formique-builder .modal {
+  .formique-builder .formique-builder-modal {
     flex-direction: column;
     max-height: 70vh;
   }
   
-  .formique-builder .modal-sidebar {
+  .formique-builder .formique-builder-modal-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid var(--uf-color-border-subtle);
   }
   
-  .formique-builder .form-block {
+  .formique-builder .formique-builder-block {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
   
-  .formique-builder .input-area {
+  .formique-builder .formique-builder-input-area {
     min-width: 100%;
   }
   
-  .formique-builder .block-controls {
+  .formique-builder .formique-builder-block-controls {
     justify-content: flex-end;
     margin-left: 0;
     width: 100%;
   }
   
-  .formique-builder .drag-handle {
+  .formique-builder .formique-builder-drag-handle {
     align-self: flex-start;
   }
   
-  .formique-builder .add-element-btn {
+  .formique-builder .formique-builder-add-element-btn {
     align-self: flex-start;
   }
   
   /* Options modal mobile styles */
-  .formique-builder .options-modal {
+  .formique-builder .formique-builder-options-modal {
     position: fixed;
     top: 50% !important;
     left: 50% !important;
@@ -802,33 +809,33 @@
     cursor: default;
   }
   
-  .formique-builder .options-modal .modal-header {
+  .formique-builder .formique-builder-options-modal .formique-builder-modal-header {
     cursor: default;
   }
 }
 
 /* Small mobile devices */
 @media (max-width: 480px) {
-  .formique-builder .form-block {
+  .formique-builder .formique-builder-block {
     padding: 8px 10px;
   }
   
-  .formique-builder .block-controls {
+  .formique-builder .formique-builder-block-controls {
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
   }
   
-  .formique-builder .required-toggle {
+  .formique-builder .formique-builder-required-toggle {
     white-space: normal;
   }
   
-  .formique-builder .input-main {
+  .formique-builder .formique-builder-input-main {
     padding: 6px 8px;
     font-size: 12px;
   }
   
-  .formique-builder .options-modal {
+  .formique-builder .formique-builder-options-modal {
     width: 95%;
     padding: 12px;
   }
