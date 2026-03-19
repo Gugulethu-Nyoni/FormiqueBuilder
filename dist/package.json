@@ -1,0 +1,23 @@
+{
+  "name": "@formique/builder",
+  "version": "1.0.0",
+  "description": "Self-contained form builder with drag-and-drop and low-code syntax",
+  "main": "formique-builder.cjs.js",
+  "module": "formique-builder.esm.js",
+  "browser": "formique-builder.umd.js",
+  "files": [
+    "*.js",
+    "*.map"
+  ],
+  "keywords": ["form-builder", "drag-and-drop", "low-code"],
+  "author": "Formique <dev@semantq.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/formique/builder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/formique/builder/issues"
+  },
+  "homepage": "https://github.com/formique/builder#readme"
+}
