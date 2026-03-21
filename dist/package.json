@@ -1,6 +1,6 @@
 {
   "name": "@formique/builder",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Self-contained form builder with drag-and-drop and low-code syntax",
   "main": "formique-builder.cjs.js",
   "module": "formique-builder.esm.js",

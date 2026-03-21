@@ -1441,7 +1441,7 @@ var formiqueBuilder$1 = {exports: {}};
               <!-- Actions can go here -->
             </div>
           </div>
-          <textarea id="fb-formiqueOutput">@form: user-registration
+          <textarea id="fb-formiqueOutput" name="formSchema">@form: user-registration
   - field-name</textarea>
         </div>
       </div>

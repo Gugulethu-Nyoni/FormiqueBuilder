@@ -48,7 +48,7 @@ pnpm add @formique/builder
 ### Local Download
 Download the latest release from [GitHub](https://github.com/formique/builder/releases)
 
----
+
 
 ## API Reference
 
@@ -57,7 +57,7 @@ Download the latest release from [GitHub](https://github.com/formique/builder/re
 The Formique Builder accepts a single options object with the following properties:
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
+|--|||-|
 | `containerId` | `string` | `'formique-builder'` | ID of the DOM element where the builder will be mounted |
 | `showFormSettings` | `boolean` | `true` | Whether to show the form settings panel |
 
@@ -94,7 +94,7 @@ const builder = new FormiqueBuilder(builderOptions);
 ### Methods
 
 | Method | Description |
-|--------|-------------|
+|--|-|
 | `getOutput()` | Returns the current form as Formique Low Code syntax |
 | `reset()` | Resets the builder to its initial empty state |
 | `destroy()` | Cleans up the builder and removes it from the DOM |
@@ -262,6 +262,6 @@ The right-hand panel displays the **Formique Low Code syntax** representation of
 ### Copy Button
 Click the **Copy** button to copy the entire Low Code output to your clipboard.
 
----
+
 
 **Pro Tip**: Familiarity with Formique Low Code syntax gives you greater control and efficiency when building complex forms with advanced conditional logic and dynamic behaviors.
