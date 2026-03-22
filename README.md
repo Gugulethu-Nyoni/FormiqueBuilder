@@ -61,7 +61,7 @@ The Formique Builder accepts a single options object with the following properti
 | `containerId` | `string` | `'formique-builder'` | ID of the DOM element where the builder will be mounted |
 | `showFormSettings` | `boolean` | `true` | Whether to show the form settings panel |
 
-#### Usage Examples
+#### Usage Example(s)
 
 ```javascript
 // Default - containerId: 'formique-builder', showFormSettings: true
