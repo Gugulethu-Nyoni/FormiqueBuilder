@@ -819,6 +819,13 @@ const css = `
     padding: 12px;
   }
 }
+
+  .fb-add-block-text {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 8px;
+    text-align: center;
+}
 `;
 
 class FormiqueBuilder {
@@ -1237,9 +1244,9 @@ class FormiqueBuilder {
           }
         },
         "dynamicSingleSelect": {
-          "display_name": "Dynamic Select",
+          "display_name": "Dynamic Select (single)",
           "description": "Cascading dropdown (e.g., Country-State)",
-          "html_type": "select",
+          "html_type": "dynamicSingleSelect",
           "icon": "fas fa-sitemap",
           "preview": '<select class="fb-preview-input"><option>Parent → Child</option></select>',
           "validation": {
@@ -1264,7 +1271,7 @@ class FormiqueBuilder {
           "description": "Form submission button",
           "html_type": "submit",
           "icon": "fas fa-paper-plane",
-          "preview": '<button type="submit" class="fb-preview-input fb-btn-primary">Submit</button>',
+          "preview": '<button type="button" type="submit" class="fb-preview-input fb-btn-primary">Submit</button>',
           "validation": {
             "required": false
           }
@@ -1380,7 +1387,7 @@ async init() {
       <div class="fb-form-settings-panel">
         <div class="fb-settings-header">
           <h3>Form Settings</h3>
-          <button class="fb-settings-toggle" id="fb-settingsToggle">
+          <button type="button" class="fb-settings-toggle" id="fb-settingsToggle">
             <i class="fas fa-chevron-up"></i> Hide Settings
           </button>
         </div>
@@ -1432,8 +1439,41 @@ async init() {
               <!-- Actions can go here -->
             </div>
           </div>
-          <textarea id="fb-formiqueOutput">@form: user-registration
+          <textarea id="fb-formiqueOutput" name="formSchema">@form: user-registration
   - field-name</textarea>
+
+<div class="fb-docs-link" style="
+  text-align: center;
+  padding: 12px 16px;
+  margin: 16px auto 8px auto;
+  max-width: 90%;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #39a0ca;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #4b5563;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+">
+  <i class="fas fa-book-open" style="margin-right: 6px; color: #39a0ca;"></i>
+  <span>For detailed guidance on Formique Low-Code syntax, visit the </span>
+  <a href="https://github.com/Gugulethu-Nyoni/formique/blob/main/docs/LowCodeGuide.md" 
+     target="_blank" 
+     rel="noopener noreferrer"
+     style="
+       color: #39a0ca;
+       text-decoration: none;
+       font-weight: 500;
+       border-bottom: 1px dotted #39a0ca;
+     "
+     onmouseover="this.style.borderBottom='1px solid'"
+     onmouseout="this.style.borderBottom='1px dotted'">
+    Low-Code Guide
+  </a>
+  <span> →</span>
+</div>
+
+
         </div>
       </div>
 
@@ -1456,8 +1496,8 @@ async init() {
             </div>
 
             <div class="fb-modal-actions">
-              <button class="fb-btn fb-btn-primary" id="fb-insertElement">Insert Element</button>
-              <button class="fb-btn fb-btn-outline" id="fb-closeModal">Cancel</button>
+              <button type="button" class="fb-btn fb-btn-primary" id="fb-insertElement">Insert Element</button>
+              <button type="button" class="fb-btn fb-btn-outline" id="fb-closeModal">Cancel</button>
             </div>
           </div>
         </div>
@@ -1467,8 +1507,8 @@ async init() {
         <div class="fb-modal-header">
           <h4 id="fb-optionsModalTitle">Field Options</h4>
           <div class="fb-modal-actions">
-            <button class="fb-btn fb-btn-primary" id="fb-saveOptions">Save</button>
-            <button class="fb-close-modal" id="fb-closeOptions">
+            <button type="button" class="fb-btn fb-btn-primary" id="fb-saveOptions">Save</button>
+            <button type="button" class="fb-close-modal" id="fb-closeOptions">
               <i class="fas fa-times"></i>
             </button>
           </div>
@@ -1478,7 +1518,7 @@ async init() {
 
       <div class="fb-toast" id="fb-toast">
         <span>Field deleted</span>
-        <button class="fb-toast-undo" id="fb-undoDelete">Undo</button>
+        <button type="button" class="fb-toast-undo" id="fb-undoDelete">Undo</button>
       </div>
     `;
   }
@@ -1840,7 +1880,12 @@ async init() {
       this.elements.emptyState.style.display = 'block';
       const addBlockDiv = document.createElement('div');
       addBlockDiv.className = 'fb-add-block-center';
-      addBlockDiv.innerHTML = `<button class="fb-add-block-btn" id="fb-addBlockCenter"><i class="fas fa-plus"></i></button>`;
+      addBlockDiv.innerHTML = `
+        <button type="button" class="fb-add-block-btn" id="fb-addBlockCenter">
+          <i class="fas fa-plus"></i>
+        </button>
+        <div class="fb-add-block-text">Click to add your first input field</div>
+      `;
       this.elements.preview.appendChild(addBlockDiv);
       
       addBlockDiv.querySelector('#fb-addBlockCenter').addEventListener('click', () => {
@@ -1865,7 +1910,7 @@ async init() {
         <div class="fb-drag-handle">
           <i class="fas fa-grip-vertical"></i>
         </div>
-        <button class="fb-add-element-btn" data-index="${index}">
+        <button type="button" class="fb-add-element-btn" data-index="${index}">
           <i class="fas fa-plus"></i>
         </button>
         <div class="fb-input-area">
@@ -1885,10 +1930,10 @@ async init() {
             <input type="checkbox" ${field.required ? 'checked' : ''}>
             <span>Required </span>
           </label>
-          <button class="fb-control-btn fb-options-btn">
+          <button type="button" class="fb-control-btn fb-options-btn">
             <i class="fas fa-cog"></i>
           </button>
-          <button class="fb-control-btn fb-delete-btn">
+          <button type="button" class="fb-control-btn fb-delete-btn">
             <i class="fas fa-trash"></i>
           </button>
           <div class="fb-type-indicator">
@@ -1960,7 +2005,7 @@ async init() {
     
     const addBlockDiv = document.createElement('div');
     addBlockDiv.className = 'fb-add-block-center';
-    addBlockDiv.innerHTML = `<button class="fb-add-block-btn" id="fb-addBlockCenter"><i class="fas fa-plus"></i></button>`;
+    addBlockDiv.innerHTML = `<button type="button" class="fb-add-block-btn" id="fb-addBlockCenter"><i class="fas fa-plus"></i></button>`;
     this.elements.preview.appendChild(addBlockDiv);
     
     addBlockDiv.querySelector('#fb-addBlockCenter').addEventListener('click', () => {
@@ -2180,7 +2225,7 @@ async init() {
                 <small>Comma-separated parent values</small>
               </div>
               <div class="fb-option-group">
-                <button type="button" class="fb-control-btn" id="fb-buildChildOptions" 
+                <button type="button" type="button" class="fb-control-btn" id="fb-buildChildOptions" 
                         style="padding: 6px 12px; font-size: 12px;">
                   <i class="fas fa-plus"></i> Configure Child Options
                 </button>
@@ -2274,7 +2319,7 @@ async init() {
             <input type="text" class="fb-option-input" id="fb-option_behavior_conditional_logic_dependsOn" 
                    value="${conditionalLogic.dependsOn || ''}" 
                    placeholder="parent_field,value" style="flex: 1;">
-            <button type="button" class="fb-control-btn" id="fb-pickFieldBtn" 
+            <button type="button" type="button" class="fb-control-btn" id="fb-pickFieldBtn" 
                     style="padding: 6px 10px; font-size: 12px;">
               <i class="fas fa-list"></i> Pick Field
             </button>
@@ -2288,7 +2333,7 @@ async init() {
             <input type="text" class="fb-option-input" id="fb-option_behavior_conditional_logic_dependents" 
                    value="${conditionalLogic.dependents || ''}" 
                    placeholder="field1,field2" style="flex: 1;">
-            <button type="button" class="fb-control-btn" id="fb-pickDependentsBtn"
+            <button type="button" type="button" class="fb-control-btn" id="fb-pickDependentsBtn"
                     style="padding: 6px 10px; font-size: 12px;">
               <i class="fas fa-list"></i> Pick Fields
             </button>

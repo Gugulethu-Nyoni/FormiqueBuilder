@@ -832,6 +832,13 @@
     padding: 12px;
   }
 }
+
+  .fb-add-block-text {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 8px;
+    text-align: center;
+}
 `;
 
 		class FormiqueBuilder {
@@ -1250,9 +1257,9 @@
 		          }
 		        },
 		        "dynamicSingleSelect": {
-		          "display_name": "Dynamic Select",
+		          "display_name": "Dynamic Select (single)",
 		          "description": "Cascading dropdown (e.g., Country-State)",
-		          "html_type": "select",
+		          "html_type": "dynamicSingleSelect",
 		          "icon": "fas fa-sitemap",
 		          "preview": '<select class="fb-preview-input"><option>Parent → Child</option></select>',
 		          "validation": {
@@ -1447,6 +1454,39 @@
           </div>
           <textarea id="fb-formiqueOutput" name="formSchema">@form: user-registration
   - field-name</textarea>
+
+<div class="fb-docs-link" style="
+  text-align: center;
+  padding: 12px 16px;
+  margin: 16px auto 8px auto;
+  max-width: 90%;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #39a0ca;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #4b5563;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+">
+  <i class="fas fa-book-open" style="margin-right: 6px; color: #39a0ca;"></i>
+  <span>For detailed guidance on Formique Low-Code syntax, visit the </span>
+  <a href="https://github.com/Gugulethu-Nyoni/formique/blob/main/docs/LowCodeGuide.md" 
+     target="_blank" 
+     rel="noopener noreferrer"
+     style="
+       color: #39a0ca;
+       text-decoration: none;
+       font-weight: 500;
+       border-bottom: 1px dotted #39a0ca;
+     "
+     onmouseover="this.style.borderBottom='1px solid'"
+     onmouseout="this.style.borderBottom='1px dotted'">
+    Low-Code Guide
+  </a>
+  <span> →</span>
+</div>
+
+
         </div>
       </div>
 
@@ -1853,7 +1893,12 @@
 		      this.elements.emptyState.style.display = 'block';
 		      const addBlockDiv = document.createElement('div');
 		      addBlockDiv.className = 'fb-add-block-center';
-		      addBlockDiv.innerHTML = `<button type="button" class="fb-add-block-btn" id="fb-addBlockCenter"><i class="fas fa-plus"></i></button>`;
+		      addBlockDiv.innerHTML = `
+        <button type="button" class="fb-add-block-btn" id="fb-addBlockCenter">
+          <i class="fas fa-plus"></i>
+        </button>
+        <div class="fb-add-block-text">Click to add your first input field</div>
+      `;
 		      this.elements.preview.appendChild(addBlockDiv);
 		      
 		      addBlockDiv.querySelector('#fb-addBlockCenter').addEventListener('click', () => {
